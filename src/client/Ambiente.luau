@@ -1,14 +1,13 @@
 --[[
-	Ambiente en tu pantalla:
-	  - Arriba nieva: un emisor de copos que sigue a la cámara.
-	  - Al bajar de Config.Mapa.AlturaOscuridad se apaga la luz del cielo y la
-	    bruma, y solo alumbran las lámparas y los faroles. Al salir vuelve el día.
+	Ambiente en tu pantalla: arriba nieva (un emisor de copos que sigue a la
+	cámara); bajo tierra la nieve se apaga.
+	La oscuridad de la mina no se hace aquí: sale sola de la luz que pone el
+	servidor (ver MapaBuilder: Ambient negro y sin luz del entorno), así que el
+	cielo nunca cambia.
 ]]
 
 local Players = game:GetService("Players")
-local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Config = require(Shared.Config)
@@ -17,41 +16,7 @@ local Ambiente = {}
 
 local player = Players.LocalPlayer
 
-local OSCURO = {
-	Ambient = Color3.fromRGB(0, 0, 0),
-	OutdoorAmbient = Color3.fromRGB(6, 6, 8),
-	Brightness = 0,
-	EnvironmentDiffuseScale = 0,
-	EnvironmentSpecularScale = 0,
-	ExposureCompensation = 0.3,
-}
-local OSCURO_BRUMA = { Density = 0, Haze = 0, Glare = 0 }
-
-local dia: { [string]: any } = {}
-local diaBruma: { [string]: any } = {}
-local dentro = false
-local nevada: ParticleEmitter
-
-local function cambiar(objeto: Instance?, valores: { [string]: any })
-	if objeto and next(valores) then
-		TweenService:Create(objeto, TweenInfo.new(0.8), valores):Play()
-	end
-end
-
--- Guarda la luz de día justo antes de oscurecer (el servidor la pone al arrancar).
-local function guardarDia(bruma: Atmosphere?)
-	for k in OSCURO do
-		dia[k] = (Lighting :: any)[k]
-	end
-	table.clear(diaBruma)
-	if bruma then
-		for k in OSCURO_BRUMA do
-			diaBruma[k] = (bruma :: any)[k]
-		end
-	end
-end
-
-local function crearNevada()
+local function crearNevada(): (Part, ParticleEmitter)
 	local nube = Instance.new("Part")
 	nube.Name = "Nevada"
 	nube.Anchored = true
@@ -83,29 +48,20 @@ local function crearNevada()
 end
 
 function Ambiente.Start()
-	local nube
-	nube, nevada = crearNevada()
+	local nube, nevada = crearNevada()
+	local limite = Config.Mapa.AlturaOscuridad
 	RunService.RenderStepped:Connect(function()
 		local camara = workspace.CurrentCamera
 		nube.CFrame = CFrame.new(camara.CFrame.Position + Vector3.new(0, 35, 0))
-
 		local character = player.Character
 		local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
-		if not root then
-			return
-		end
-		local abajo = root.Position.Y < Config.Mapa.AlturaOscuridad
-		if abajo ~= dentro then
-			dentro = abajo
-			nevada.Enabled = not abajo
-			local bruma = Lighting:FindFirstChildOfClass("Atmosphere")
-			if abajo then
-				guardarDia(bruma)
-				cambiar(Lighting, OSCURO)
-				cambiar(bruma, OSCURO_BRUMA)
-			else
-				cambiar(Lighting, dia)
-				cambiar(bruma, diaBruma)
+		if root then
+			-- Con un margen, para que no se prenda y apague en el borde.
+			local y = root.Position.Y
+			if nevada.Enabled and y < limite - 2 then
+				nevada.Enabled = false
+			elseif not nevada.Enabled and y > limite + 2 then
+				nevada.Enabled = true
 			end
 		end
 	end)

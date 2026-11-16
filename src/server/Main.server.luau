@@ -19,12 +19,14 @@ local Millonario = require(script.Parent.Millonario)
 local Casco = require(script.Parent.Casco)
 local Herrero = require(script.Parent.Herrero)
 local DinamitaService = require(script.Parent.DinamitaService)
+local Pepitas = require(script.Parent.Pepitas)
 
 Players.RespawnTime = Config.TiempoReaparicion
 
 local mapa = MapaBuilder.Build()
 Millonario.Build(mapa.mapa)
 Herrero.Build(mapa.mapa)
+Pepitas.Init()
 PicoService.Init(mapa.minerales)
 DinamitaService.Init()
 

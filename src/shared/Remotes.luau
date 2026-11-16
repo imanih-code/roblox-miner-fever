@@ -1,8 +1,10 @@
 --[[
 	RemoteEvents del juego. El servidor los crea; el cliente los espera.
 	  Aviso  (s -> c)  texto y tipo ("good", "bad", "info", "gold") de un aviso
-	  Picar  (c -> s)  golpe de pico: punto donde pegó y la pieza de mineral (o nil si es roca)
-	  Golpe  (s -> c)  el golpe sirvió: punto y color, para las chispas y el sonido
+	  Picar  (c -> s)  picando (manteniendo el clic): punto, normal y pieza (mineral o
+	                   pedrusco; nil si es roca). Sin argumentos: dejó de picar.
+	  Progreso (s -> c) cuánto lleva picado tu objetivo (0 a 1) y si ya se rompió
+	  Golpe  (s -> c)  un golpe de pico: punto y color, para las chispas y el sonido
 	  AbrirHerrero (s -> c)  abrir el menú del herrero
 	  Herrero      (c -> s)  en el menú del herrero: "Mejorar", "Reparar", "RepararHierro",
 	                         "Dinamita" o "DinamitaAzufre"
@@ -17,6 +19,7 @@ local NAMES = {
 	"Aviso",
 	"Picar",
 	"Golpe",
+	"Progreso",
 	"AbrirHerrero",
 	"Herrero",
 	"Dinamita",

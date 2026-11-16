@@ -65,12 +65,22 @@ local function suave(t: number): number
 	return t * t * (3 - 2 * t)
 end
 
--- Altura del cerro (sobre el suelo del valle) en cada punto del mapa.
+-- Altura del terreno (sobre el suelo del valle) en cada punto del mundo:
+--   valle plano -> cresta que se puede trepar (la pared invisible está encima)
+--   -> afuera, una meseta más baja -> a lo lejos, la cordillera.
+-- Al norte está el cerro de la mina, con su acantilado y el glaciar.
 function MapaBuilder.Altura(x: number, z: number): number
-	-- Cerros del borde: el valle es una elipse, más corta hacia el norte.
+	-- El valle es una elipse, más corta hacia el norte.
 	local zz = if z > 0 then z * 1.6 else z
 	local d = math.sqrt(x * x + zz * zz)
-	local h = suave((d - C.RadioValle) / 140) * C.AlturaBorde
+	-- Cresta alrededor del valle.
+	local h = C.AltoCresta * math.exp(-((d - C.RadioCresta) / C.AnchoCresta) ^ 2) * suave((d - C.RadioValle) / 30)
+	-- Afuera: meseta más baja con lomas suaves.
+	local afuera = suave((d - C.RadioCresta - 30) / 70)
+	h += afuera * (math.noise(x / 70, z / 70, 4.4) * 10 - C.HondoMeseta)
+	-- Lejos: la cordillera.
+	local cordillera = 1 - math.abs(math.noise(x / 260, z / 260, 8.8))
+	h += suave((d - C.RadioLejos) / 320) * C.AltoLejos * (0.4 + 0.6 * cordillera * cordillera)
 	-- Cerro de la mina al norte: acantilado y cumbre con glaciar.
 	if z > C.AcantiladoZ then
 		local subida = suave((z - C.AcantiladoZ) / 24)
@@ -78,32 +88,31 @@ function MapaBuilder.Altura(x: number, z: number): number
 		local cumbre = math.exp(-((x - 10) ^ 2 + (z - 150) ^ 2) / (2 * 75 ^ 2)) * C.AlturaCumbre
 		h = math.max(h, subida * ancho * (C.AlturaAcantilado + cumbre))
 	end
-	-- Crestas y picos: solo en los cerros, el valle queda plano.
+	-- Crestas y picos: solo en los cerros; el valle y la meseta quedan lisos.
 	-- Junto a la boca de la mina el acantilado queda liso, para que la rampa
 	-- siempre entre bajo techo de roca.
 	local boca = suave((math.sqrt(x * x + (z - 40) ^ 2) - 16) / 22)
-	local cerro = math.clamp(h / 25, 0, 1) * boca
+	-- La cresta del valle va más lisa (para ver el paisaje por encima); el cerro
+	-- de la mina y la cordillera, con todos sus picos.
+	local enCresta = math.exp(-((d - C.RadioCresta) / (C.AnchoCresta * 1.5)) ^ 2)
+	local deMina = if z > C.AcantiladoZ then suave(1 - (math.abs(x) - 70) / 60) else 0
+	local rugosidad = 1 - 0.7 * enCresta * (1 - deMina)
+	local cerro = math.clamp(h / 25, 0, 1) * boca * rugosidad
 	local cresta = 1 - math.abs(math.noise(x / 70, z / 70, 2.1))
 	local cresta2 = 1 - math.abs(math.noise(x / 26, z / 26, 6.3))
 	local ruido = math.noise(x / 90, z / 90, 1.7)
 	h += (cresta * cresta * 50 + cresta2 * cresta2 * 14 + ruido * 18 - 24) * cerro
-	return math.max(h, 0)
+	return h
 end
 
 -- Material de la superficie según la altura y la pendiente.
-local function materialArriba(x: number, z: number, h: number): Enum.Material
+local function materialArriba(x: number, z: number, h: number, pendiente: number): Enum.Material
 	if h < 2 then
-		-- Suelo del valle: tierra con manchas de nieve.
+		-- Suelo del valle y de la meseta: tierra con manchas de nieve.
 		local n = math.noise(x / 24, z / 24, 9.1) + math.noise(x / 9, z / 9, 2.4) * 0.3
 		return if n > 0.15 then Enum.Material.Snow else Enum.Material.Ground
 	end
 	-- En las paredes empinadas la nieve no se queda: roca desnuda.
-	local pendiente = math.max(
-		math.abs(MapaBuilder.Altura(x + 4, z) - h),
-		math.abs(MapaBuilder.Altura(x - 4, z) - h),
-		math.abs(MapaBuilder.Altura(x, z + 4) - h),
-		math.abs(MapaBuilder.Altura(x, z - 4) - h)
-	) / 4
 	if pendiente > 1.8 then
 		return Enum.Material.Rock
 	end
@@ -116,24 +125,42 @@ local function materialArriba(x: number, z: number, h: number): Enum.Material
 	return Enum.Material.Rock
 end
 
--- Escribe los cerros (desde y = -4 hacia arriba) en trozos de 64 × 64 studs.
+-- Escribe todo el terreno de la superficie en trozos de 64 × 64 studs.
+-- En el núcleo (valle y mina) se llena desde y = -4; afuera, donde nadie llega,
+-- solo una cáscara bajo la superficie, para que sea liviano.
 local function cerros()
 	local TROZO = 64
-	local Y0 = -4
-	for cx = M.SueloMin.X, M.SueloMax.X - 1, TROZO do
-		for cz = M.SueloMin.Y, M.SueloMax.Y - 1, TROZO do
-			local n = TROZO // 4
-			local alturas = table.create(n)
-			local maxH = 0
-			for i = 1, n do
-				alturas[i] = table.create(n)
-				for k = 1, n do
+	local n = TROZO // 4
+	local W = M
+	local inicio = os.clock()
+	for cx = W.MundoMin.X, W.MundoMax.X - 1, TROZO do
+		for cz = W.MundoMin.Y, W.MundoMax.Y - 1, TROZO do
+			local nucleo = cx >= M.SueloMin.X and cx < M.SueloMax.X and cz >= M.SueloMin.Y and cz < M.SueloMax.Y
+			-- Alturas con un borde de una celda, para medir la pendiente.
+			local alt = {}
+			for i = 0, n + 1 do
+				alt[i] = {}
+				for k = 0, n + 1 do
 					local h = MapaBuilder.Altura(cx + (i - 0.5) * 4, cz + (k - 0.5) * 4)
-					alturas[i][k] = h
-					maxH = math.max(maxH, h)
+					alt[i][k] = if nucleo then math.max(h, 0) else h
 				end
 			end
-			local ny = math.ceil((maxH - Y0) / 4) + 1
+			local bajo = table.create(n)
+			local yMin, yMax = math.huge, -math.huge
+			for i = 1, n do
+				bajo[i] = table.create(n)
+				for k = 1, n do
+					local h = alt[i][k]
+					local b = if nucleo
+						then -4
+						else math.min(h, alt[i - 1][k], alt[i + 1][k], alt[i][k - 1], alt[i][k + 1]) - 8
+					bajo[i][k] = b
+					yMin = math.min(yMin, b)
+					yMax = math.max(yMax, h)
+				end
+			end
+			local Y0 = math.floor(yMin / 4) * 4
+			local ny = math.ceil((yMax - Y0) / 4) + 1
 			local mats, occs = table.create(n), table.create(n)
 			for i = 1, n do
 				mats[i], occs[i] = table.create(ny), table.create(ny)
@@ -143,11 +170,23 @@ local function cerros()
 				local x = cx + (i - 0.5) * 4
 				for k = 1, n do
 					local z = cz + (k - 0.5) * 4
-					local h = alturas[i][k]
-					local arriba = materialArriba(x, z, h)
+					local h = alt[i][k]
+					local pendiente = math.max(
+						math.abs(alt[i + 1][k] - h),
+						math.abs(alt[i - 1][k] - h),
+						math.abs(alt[i][k + 1] - h),
+						math.abs(alt[i][k - 1] - h)
+					) / 4
+					local arriba = materialArriba(x, z, h, pendiente)
+					local b = bajo[i][k]
 					for j = 1, ny do
 						local base = Y0 + (j - 1) * 4 -- piso de la celda
-						local lleno = if j == 1 then 1 else math.clamp((h - base) / 4, 0, 1)
+						local lleno = math.clamp((h - base) / 4, 0, 1)
+						if nucleo and base == -4 then
+							lleno = 1 -- el suelo del valle (y el techo de la mina) siempre lleno
+						elseif base + 4 <= b then
+							lleno = 0 -- debajo de la cáscara: vacío
+						end
 						if lleno < 0.05 then
 							mats[i][j][k], occs[i][j][k] = Enum.Material.Air, 0
 						else
@@ -159,9 +198,41 @@ local function cerros()
 			end
 			local region = Region3.new(Vector3.new(cx, Y0, cz), Vector3.new(cx + TROZO, Y0 + ny * 4, cz + TROZO))
 			Terrain:WriteVoxels(region, 4, mats, occs)
-			task.wait()
+			if os.clock() - inicio > 0.05 then
+				task.wait()
+				inicio = os.clock()
+			end
 		end
 	end
+end
+
+-- Pared invisible sobre la cresta: se ve el mundo de afuera, pero no se sale.
+local function muro(carpeta: Instance)
+	local pared = Instance.new("Folder")
+	pared.Name = "ParedInvisible"
+	local LADOS = 96
+	local function punto(i: number): Vector3
+		local a = i / LADOS * math.pi * 2
+		local x, z = math.cos(a) * C.RadioMuro, math.sin(a) * C.RadioMuro
+		if z > 0 then
+			z /= 1.6 -- la misma elipse que el valle
+		end
+		return Vector3.new(x, 0, z)
+	end
+	for i = 0, LADOS - 1 do
+		local a, b = punto(i), punto(i + 1)
+		local p = Instance.new("Part")
+		p.Name = "Pared"
+		p.Anchored = true
+		p.CanCollide = true
+		p.CanQuery = false
+		p.CanTouch = false
+		p.Transparency = 1
+		p.Size = Vector3.new(4, 800, (b - a).Magnitude + 2)
+		p.CFrame = CFrame.lookAt((a + b) / 2 + Vector3.new(0, 400, 0), (b + a) / 2 + (b - a) + Vector3.new(0, 400, 0))
+		p.Parent = pared
+	end
+	pared.Parent = carpeta
 end
 
 local function terreno()
@@ -273,14 +344,17 @@ local function entrada(carpeta: Folder)
 end
 
 -- Luz fría de puna: sol bajo, cielo nublado y bruma.
+-- La mina queda oscura sola: Ambient (la luz de los lugares tapados del cielo) es
+-- negro y la luz del entorno está apagada, así que bajo la roca solo alumbran las
+-- lámparas y los faroles. El cielo y el valle no cambian nunca.
 local function cielo()
 	Lighting.ClockTime = 15.2
 	Lighting.Brightness = 2.4
-	Lighting.Ambient = Color3.fromRGB(70, 76, 92)
+	Lighting.Ambient = Color3.new(0, 0, 0)
 	Lighting.OutdoorAmbient = Color3.fromRGB(140, 152, 172)
 	Lighting.ColorShift_Top = Color3.fromRGB(205, 220, 240)
-	Lighting.EnvironmentDiffuseScale = 1
-	Lighting.EnvironmentSpecularScale = 1
+	Lighting.EnvironmentDiffuseScale = 0
+	Lighting.EnvironmentSpecularScale = 0
 	Lighting.ExposureCompensation = 0
 	local atm = Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
 	atm.Density = 0.36
@@ -358,13 +432,15 @@ function MapaBuilder.Build()
 	terreno()
 	entrada(mapa)
 	campamento(mapa)
+	muro(mapa)
 	Pueblo.Build(mapa)
 
 	local minerales = Instance.new("Folder")
 	minerales.Name = "Minerales"
 	minerales.Parent = workspace
 	local total = Vetas.Generar(minerales)
-	print(string.format("[Fiebre Minera] Mina lista con %d piezas de mineral", total))
+	local visibles = Vetas.RevelarTodo()
+	print(string.format("[Fiebre Minera] Mina lista con %d piezas de mineral (%d a la vista)", total, visibles))
 
 	return { mapa = mapa, minerales = minerales }
 end

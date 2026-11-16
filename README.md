@@ -12,23 +12,33 @@ minerales, precios, pico, mochila, lámpara) están en
 ## Qué hay jugable
 
 - **Alta montaña helada** (inspirada en los pueblos mineros de los Andes): un valle de tierra
-  y nieve rodeado de cerros escarpados, con nevada, bruma fría y un glaciar arriba. Pueblo de
-  casitas con techo de calamina, nieve en los techos, ventanas encendidas y chimeneas con humo.
+  y nieve rodeado de una cresta baja; detrás se ve una meseta y una cordillera lejana (se ve,
+  pero una pared invisible sobre la cresta no deja salir). Nevada, bruma fría y glaciar sobre
+  el cerro de la mina. Pueblo de casitas con techo de calamina, nieve en los techos, ventanas
+  encendidas y chimeneas con humo.
 - **Campamento:** apareces mirando hacia la boca de la mina, con una fogata y el puesto del
   millonario (traje, sombrero de copa, cadena de oro y dos guardaespaldas).
 - **Casco minero:** todos llevan casco amarillo con lámpara al frente; alumbra hacia donde miras.
 - **La mina:** se entra a pie por un marco de madera en el acantilado; adentro una rampa con
-  faroles baja a una galería de inicio. Bajo tierra se apaga el cielo y solo alumbran las
-  lámparas y los faroles.
+  faroles baja a una galería de inicio. Bajo la roca está oscuro y solo alumbran las lámparas
+  y los faroles (el cielo de afuera no cambia).
   - **Superficie** (piedra, cualquier pico): carbón y cobre.
   - **Cuevas** (roca dura, pide pico de piedra): hierro, azufre y plata.
   - **Roca imposible** (basalto): manchas y bordes que ningún pico rompe.
   - Solo se pica dentro de la zona de la mina: los cerros y el valle no se rompen.
-- **Pico:** clic para picar donde apuntas (alcance 12 studs). Cada golpe borra un poco de
-  roca. Las piezas de mineral necesitan varios golpes y van a la mochila.
+- **Pico:** mantén el clic apuntando a la roca (alcance 12 studs). El trozo que picas se va
+  gastando a la vista, con una barra encima, hasta romperse; si sueltas o cambias de trozo,
+  vuelve a quedar entero. Si varios pican lo mismo, se rompe más rápido. Mientras mantienes
+  el clic el objetivo queda anclado (aunque su superficie se aleje al gastarse) hasta que se
+  rompe o apuntas claramente a otro lado.
+  - Los minerales también se pican así y al romperse **caen como pepitas**: se recogen
+    tocándolas con el cuerpo (cualquiera las puede agarrar).
+  - **Sin xray:** los minerales no existen en el cliente hasta que la roca a su alrededor
+    se abre.
   - Cinco niveles con su skin: madera → piedra → hierro → oro → diamante. Cada uno pica más
     rápido y aguanta más. El de piedra ya rompe la roca dura de Cuevas.
-  - **Durabilidad:** cada golpe gasta 1. Con 0 el pico no pica hasta repararlo.
+  - **Durabilidad:** cada golpe (uno por Cadencia mientras picas) gasta 1. Con 0 el pico
+    no pica hasta repararlo.
 - **El herrero** (a la izquierda de la boca de la mina, con su fragua): "Hablar con el
   herrero" abre su menú para **mejorar** el pico, **repararlo** con dinero (según lo gastado)
   o **repararlo con hierro** de la mochila (cada hierro repara 35 %). También vende
@@ -36,8 +46,8 @@ minerales, precios, pico, mochila, lámpara) están en
 - **Dinamita** (hasta 10): con la herramienta en la mano, clic para poner un cartucho donde
   apuntas. La mecha dura 3 s y la explosión abre un hueco grande en cualquier roca de la mina
   (menos la roca imposible), deja los minerales a la vista, empuja a los mineros cercanos sin
-  hacerles daño y suelta pedruscos que ruedan y pueden tapar túneles. Los pedruscos se rompen
-  con 2 golpes de pico y se limpian solos al minuto. Solo se usa dentro de la mina.
+  hacerles daño y suelta escombro: pedruscos que ruedan y pueden tapar túneles. Se rompen
+  picándolos y se limpian solos al minuto. Solo se usa dentro de la mina.
 - **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico con su durabilidad,
   dinamita y profundidad.
 - **El millonario:** "Vender minerales" junto a su mostrador vende toda la mochila.
@@ -88,8 +98,8 @@ Pruebas rápidas en Studio (barra de comandos con el juego corriendo):
 `workspace:SetAttribute("PonerDurabilidad", 3)` (servidor: durabilidad del pico de todos),
 `workspace:SetAttribute("PruebaDinamita", Vector3.new(x, y, z))` (cliente: pone la dinamita
 ahí, con la dinamita en la mano) y
-`workspace:SetAttribute("PruebaPicar", Vector3.new(x, y, z))` (cliente: pica hacia ese punto
-como si fuera un clic, con el pico en la mano).
+`workspace:SetAttribute("PruebaPicar", Vector3.new(x, y, z))` (cliente: pica sin parar hacia
+ese punto, con el pico en la mano; `nil` para soltar).
 
 Para probar con varios jugadores: **Test → Clients and Servers** con 2 o más jugadores.
 
@@ -110,10 +120,11 @@ src/
   shared/   Config (balance), Remotes, Format
   server/   Main, PlayerData (guardado), MapaBuilder (cerros, valle, mina, entrada, cielo),
             Pueblo (casitas), Casco (casco con lámpara),
-            Vetas (piezas de mineral), PicoService (pico, golpes y durabilidad), Mochila,
+            Vetas (minerales ocultos hasta destaparlos), Pepitas (lo que sueltan),
+            PicoService (pico, picado continuo y durabilidad), Mochila,
             DinamitaService (dinamita, explosión y pedruscos),
             Npc (piezas para armar NPC), Millonario, Herrero (mejorar y reparar)
   client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido), DinamitaCliente,
             HerreroMenu,
-            Ambiente (nevada arriba, oscuridad bajo tierra)
+            Ambiente (nevada arriba)
 ```

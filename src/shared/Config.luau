@@ -23,9 +23,12 @@ Config.TiempoReaparicion = 3
 -- todo lo que se pone encima (aparición, millonario, marco de la mina) se sube eso.
 Config.Mapa = {
 	Suelo = 2,
-	-- Todo el mapa (x, z): valle del campamento rodeado de cerros helados.
-	SueloMin = Vector2.new(-256, -192),
-	SueloMax = Vector2.new(256, 320),
+	-- Núcleo (x, z): valle, cresta y cerro de la mina, con roca imposible debajo.
+	SueloMin = Vector2.new(-192, -192),
+	SueloMax = Vector2.new(192, 320),
+	-- Todo el mundo que se ve (afuera del núcleo solo es paisaje).
+	MundoMin = Vector2.new(-896, -896),
+	MundoMax = Vector2.new(896, 1024),
 	-- Zona excavable de la mina, bajo tierra. Afuera de ella todo es roca imposible.
 	MinaMin = Vector3.new(-80, -96, 40),
 	MinaMax = Vector3.new(80, -4, 200),
@@ -38,14 +41,21 @@ Config.Mapa = {
 	Millonario = Vector3.new(20, 0, 10),
 	Herrero = Vector3.new(-20, 0, 10),
 
-	-- Bajo esta altura (y) se apaga el sol y solo alumbra tu lámpara.
+	-- Bajo esta altura (y) se deja de ver la nevada (la mina es oscura por la luz, ver MapaBuilder).
 	AlturaOscuridad = -8,
 }
 
 -- Cerros de la superficie (alta montaña helada). Solo se ven: no se pican.
+-- Las distancias son sobre una elipse más corta hacia el norte (z se estira × 1.6).
 Config.Montanas = {
 	RadioValle = 90, -- valle plano alrededor del campamento
-	AlturaBorde = 150, -- cerros del borde del mapa
+	RadioCresta = 165, -- cresta que rodea el valle (se puede trepar)
+	AltoCresta = 42,
+	AnchoCresta = 40,
+	RadioMuro = 185, -- pared invisible: hasta aquí se puede caminar
+	HondoMeseta = 18, -- afuera de la cresta el terreno baja a una meseta
+	RadioLejos = 380, -- desde aquí sube la cordillera lejana (solo se ve)
+	AltoLejos = 320,
 	AcantiladoZ = 24, -- desde aquí sube el cerro de la mina, al norte
 	AlturaAcantilado = 75,
 	AlturaCumbre = 85, -- cumbre con glaciar encima de la mina
@@ -56,10 +66,28 @@ Config.Montanas = {
 -- Rocas -------------------------------------------------------------------------
 -- Nivel de pico que hace falta para romper cada material del terreno.
 -- Lo que no está en la tabla (pasto, basalto) no se puede picar.
+-- Dureza: vida de un trozo de esa roca. Un pico le quita su Poder en cada golpe
+-- (ver Config.Picos), así que con madera la piedra tarda 4 golpes (2 s).
 Config.Rocas = {
-	[Enum.Material.Rock] = { Nombre = "Piedra", Nivel = 1 },
-	[Enum.Material.Ground] = { Nombre = "Tierra", Nivel = 1 },
-	[Enum.Material.Slate] = { Nombre = "Roca dura", Nivel = 2 },
+	[Enum.Material.Rock] = { Nombre = "Piedra", Nivel = 1, Dureza = 4 },
+	[Enum.Material.Ground] = { Nombre = "Tierra", Nivel = 1, Dureza = 3 },
+	[Enum.Material.Slate] = { Nombre = "Roca dura", Nivel = 2, Dureza = 8 },
+}
+
+-- Picado continuo (manteniendo el clic) ---------------------------------------------
+Config.Picado = {
+	-- Si nadie pica un trozo o mineral por este tiempo, vuelve a estar entero.
+	OlvidarTras = 0.5,
+	-- Cada cuánto el servidor avanza el picado y actualiza el terreno.
+	Paso = 0.1,
+	-- Lo más que se achica un trozo antes de romperse (0.8 = queda al 20 %).
+	Achique = 0.8,
+}
+
+-- Pepitas: lo que suelta un mineral al romperse; se recogen al tocarlas.
+Config.Pepitas = {
+	Tamano = 1.4,
+	Duran = 180, -- segundos en el suelo antes de desaparecer
 }
 Config.RocaImposible = Enum.Material.Basalt
 
@@ -101,13 +129,13 @@ Config.Rarezas = {
 }
 Config.AvisarDesdeRareza = 3
 
--- Golpes: golpes de pico para soltarlo. NivelPico: pico mínimo.
+-- Dureza: vida de la pieza (golpes con pico de madera). NivelPico: pico mínimo.
 Config.Minerales = {
 	Carbon = {
 		Nombre = "Carbón",
 		Rareza = 1,
 		Valor = 4,
-		Golpes = 2,
+		Dureza = 3,
 		NivelPico = 1,
 		Color = Color3.fromRGB(38, 36, 40),
 		Material = Enum.Material.Slate,
@@ -116,7 +144,7 @@ Config.Minerales = {
 		Nombre = "Cobre",
 		Rareza = 2,
 		Valor = 10,
-		Golpes = 3,
+		Dureza = 4,
 		NivelPico = 1,
 		Color = Color3.fromRGB(214, 120, 64),
 		Material = Enum.Material.Metal,
@@ -125,7 +153,7 @@ Config.Minerales = {
 		Nombre = "Hierro",
 		Rareza = 1,
 		Valor = 18,
-		Golpes = 3,
+		Dureza = 6,
 		NivelPico = 2,
 		Color = Color3.fromRGB(176, 150, 132),
 		Material = Enum.Material.Metal,
@@ -134,7 +162,7 @@ Config.Minerales = {
 		Nombre = "Azufre",
 		Rareza = 2,
 		Valor = 14,
-		Golpes = 2,
+		Dureza = 5,
 		NivelPico = 2,
 		Color = Color3.fromRGB(232, 214, 64),
 		Material = Enum.Material.SmoothPlastic,
@@ -143,7 +171,7 @@ Config.Minerales = {
 		Nombre = "Plata",
 		Rareza = 3,
 		Valor = 45,
-		Golpes = 4,
+		Dureza = 8,
 		NivelPico = 2,
 		Color = Color3.fromRGB(222, 228, 240),
 		Material = Enum.Material.Metal,
@@ -152,7 +180,8 @@ Config.Minerales = {
 }
 
 -- Pico ------------------------------------------------------------------------------
--- Cadencia: segundos entre golpes. Durabilidad: golpes que aguanta antes de romperse.
+-- Cadencia: segundos entre golpes (manteniendo el clic). Poder: lo que le quita a la
+-- dureza de un trozo o mineral en cada golpe. Durabilidad: golpes que aguanta.
 -- Precio: lo que cobra el herrero por mejorarlo a ese nivel (el de madera es el inicial).
 -- Reparar: lo que cuesta repararlo entero (si le falta la mitad, cobra la mitad).
 Config.Picos = {
@@ -160,6 +189,7 @@ Config.Picos = {
 		Nombre = "Pico de madera",
 		Nivel = 1,
 		Cadencia = 0.5,
+		Poder = 1,
 		Durabilidad = 150,
 		Precio = 0,
 		Reparar = 15,
@@ -170,6 +200,7 @@ Config.Picos = {
 		Nombre = "Pico de piedra",
 		Nivel = 2,
 		Cadencia = 0.42,
+		Poder = 1.5,
 		Durabilidad = 300,
 		Precio = 150,
 		Reparar = 40,
@@ -180,6 +211,7 @@ Config.Picos = {
 		Nombre = "Pico de hierro",
 		Nivel = 3,
 		Cadencia = 0.35,
+		Poder = 2.2,
 		Durabilidad = 550,
 		Precio = 600,
 		Reparar = 120,
@@ -190,6 +222,7 @@ Config.Picos = {
 		Nombre = "Pico de oro",
 		Nivel = 4,
 		Cadencia = 0.29,
+		Poder = 3,
 		Durabilidad = 900,
 		Precio = 2000,
 		Reparar = 300,
@@ -200,6 +233,7 @@ Config.Picos = {
 		Nombre = "Pico de diamante",
 		Nivel = 5,
 		Cadencia = 0.24,
+		Poder = 4.2,
 		Durabilidad = 1500,
 		Precio = 6000,
 		Reparar = 700,
@@ -215,7 +249,6 @@ Config.DurabilidadBaja = 0.2
 -- Nombre de cada nivel de pico, para los avisos ("necesitas un pico de piedra").
 Config.NivelesPico = { "madera", "piedra", "hierro", "oro", "diamante" }
 Config.Alcance = 12 -- studs desde la cabeza hasta donde pegas
-Config.RadioPicado = 4.6 -- radio de roca que borra cada golpe
 
 -- Dinamita ------------------------------------------------------------------------------
 -- Se compra con el herrero; abre un hueco grande en cualquier roca de la mina menos la
@@ -227,8 +260,8 @@ Config.Dinamita = {
 	Alcance = 14, -- qué tan lejos la puedes poner
 	Mecha = 3, -- segundos hasta que explota
 	Radio = 9, -- radio del hueco
-	Pedruscos = 6, -- piedras sueltas que salen volando
-	GolpesPedrusco = 2, -- golpes de pico para romper un pedrusco
+	Pedruscos = 8, -- escombro: piedras sueltas que salen volando
+	DurezaPedrusco = 2, -- vida de un pedrusco (golpes con pico de madera)
 	PedruscosDuran = 60, -- segundos hasta que se limpian solos
 	MaxPedruscos = 80, -- en todo el servidor; se borran los más viejos
 }

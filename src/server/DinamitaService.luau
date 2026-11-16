@@ -21,6 +21,7 @@ local Format = require(Shared.Format)
 local PlayerData = require(script.Parent.PlayerData)
 local Mochila = require(script.Parent.Mochila)
 local PicoService = require(script.Parent.PicoService)
+local Vetas = require(script.Parent.Vetas)
 
 local DinamitaService = {}
 
@@ -175,7 +176,6 @@ local function pedruscos(centro: Vector3)
 		p.CustomPhysicalProperties = PhysicalProperties.new(3, 0.8, 0.1)
 		p.AssemblyLinearVelocity = dir * rng:NextNumber(25, 45) + Vector3.new(0, 15, 0)
 		p:SetAttribute("Pedrusco", true)
-		p:SetAttribute("Golpes", D.GolpesPedrusco)
 		p:SetAttribute("Creado", os.clock())
 		p.Parent = carpetaPedruscos
 		Debris:AddItem(p, D.PedruscosDuran)
@@ -184,7 +184,9 @@ local function pedruscos(centro: Vector3)
 end
 
 local function explotar(centro: Vector3)
+	PicoService.Invalidar(centro, D.Radio)
 	hueco(centro, D.Radio)
+	Vetas.Revelar(centro, D.Radio + 2)
 	local boom = Instance.new("Explosion")
 	boom.Position = centro
 	boom.BlastRadius = D.Radio + 4

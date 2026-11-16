@@ -187,8 +187,12 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
 ## 11. Primera versión jugable (decisiones tomadas)
 
 - **Ambiente:** alta montaña helada, inspirada en La Rinconada (Perú): el campamento está en
-  un valle de tierra y nieve rodeado de cerros escarpados; al norte, el cerro de la mina con
+  un valle de tierra y nieve rodeado de una cresta baja; al norte, el cerro de la mina con
   glaciar en la cumbre. Nieva, hay bruma fría y un pueblo de casitas con techo de calamina.
+- **Mundo de afuera:** para que no se sienta encerrado, detrás de la cresta se ve una meseta
+  y una cordillera lejana. Una pared invisible sobre la cresta no deja salir.
+- **Oscuridad:** la luz es fija (Ambient negro y sin luz del entorno): bajo la roca está
+  oscuro solo, sin cambiar el cielo al entrar o salir de la mina.
 - **Mapa:** la mina es un bloque de 160 × 160 studs y unos 90 de hondo, bajo el cerro del
   norte. Se entra a pie por un marco de madera en el acantilado; adentro la rampa baja a una
   galería de inicio. Solo se pica dentro de la zona de la mina; cerros y valle no se rompen.
@@ -196,8 +200,18 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
   mira y luz suave alrededor).
 - **Capas hechas:** Superficie (piedra, carbón y cobre) y Cuevas (roca dura, que pide pico
   de piedra; hierro, azufre y plata). Las de Profundo, Magma y Núcleo vienen después.
-- **Picado:** cada golpe borra la roca que tu pico puede romper en un radio de unos 4.6
-  studs; un golpe cada 0.5 s con el pico de madera. Las piezas de mineral piden 2 a 4 golpes.
+- **Picado continuo (como Minecraft):** se mantiene el clic. Lo que picas es un trozo (el
+  vóxel apuntado y sus 6 vecinos) que se va achicando a la vista, con barra de progreso,
+  hasta romperse. Si sueltas o cambias de trozo, vuelve a quedar entero. Si varios pican lo
+  mismo, suman. Tiempo = dureza ÷ poder del pico × cadencia: con madera, la piedra tarda 2 s.
+  Durezas: tierra 3, piedra 4, roca dura 8; carbón 3, cobre 4, azufre 5, hierro 6, plata 8.
+  Poder de los picos: madera 1, piedra 1.5, hierro 2.2, oro 3, diamante 4.2.
+- **Pepitas:** los minerales al romperse caen como pepitas con física; se recogen tocándolas
+  (cualquiera puede agarrarlas) y desaparecen a los 3 minutos.
+- **Sin xray:** los minerales son solo datos en el servidor hasta que la roca a su alrededor
+  se abre; recién ahí aparecen en el mundo.
+- **Dinamita:** el hueco es instantáneo (eso la distingue del pico) y deja escombro: 8
+  pedruscos que se pican para quitarlos.
 - **Mochila:** 12 minerales chicos; no se guarda al salir del juego.
 - **Precios iniciales:** carbón $4, cobre $10, azufre $14, hierro $18, plata $45.
 - **Lámpara:** por ahora siempre prendida; el carbón como combustible llega después.
@@ -216,8 +230,8 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
   Reparar cobra según lo gastado. Cada hierro de la mochila repara el 35 % del pico.
 - **Dinamita:** $40, o $15 más 1 azufre; se cargan hasta 10 y se guardan. Mecha de 3 s,
   hueco de radio 9 en cualquier roca de la mina (incluida la roca dura; nunca la roca
-  imposible). No mata: solo empuja. Suelta 6 pedruscos con física que se rompen con 2 golpes
-  de pico y se limpian solos al minuto (máximo 80 en el servidor). Solo se usa dentro de la
+  imposible). No mata: solo empuja. Suelta 8 pedruscos con física que se pican para quitarlos
+  y se limpian solos al minuto (máximo 80 en el servidor). Solo se usa dentro de la
   mina.
 - **Aún no:** minerales grandes, capas más hondas, derrumbe, tiendas, banca y sabotaje.
 

@@ -1,7 +1,7 @@
 --[[
 	Punto de entrada del servidor de Fiebre Minera: construye el mapa y la mina,
 	pone al millonario, arranca el pico y maneja entradas, salidas y
-	reapariciones de jugadores (lámpara y pico en cada personaje).
+	reapariciones de jugadores (a cada personaje le pone casco con lámpara y pico).
 ]]
 
 local Players = game:GetService("Players")
@@ -16,6 +16,7 @@ local MapaBuilder = require(script.Parent.MapaBuilder)
 local Mochila = require(script.Parent.Mochila)
 local PicoService = require(script.Parent.PicoService)
 local Millonario = require(script.Parent.Millonario)
+local Casco = require(script.Parent.Casco)
 
 Players.RespawnTime = Config.TiempoReaparicion
 
@@ -23,23 +24,8 @@ local mapa = MapaBuilder.Build()
 Millonario.Build(mapa.mapa)
 PicoService.Init(mapa.minerales)
 
--- La lámpara: una luz cálida en la cabeza que ven todos.
-local function ponerLampara(character: Model)
-	local head = character:WaitForChild("Head", 10)
-	if not head then
-		return
-	end
-	local luz = Instance.new("PointLight")
-	luz.Name = "Lampara"
-	luz.Range = Config.Lampara.Alcance
-	luz.Brightness = Config.Lampara.Brillo
-	luz.Color = Config.Lampara.Color
-	luz.Shadows = true
-	luz.Parent = head
-end
-
 local function onCharacter(player: Player, character: Model)
-	task.spawn(ponerLampara, character)
+	task.spawn(Casco.Poner, character)
 	task.defer(PicoService.Dar, player)
 end
 

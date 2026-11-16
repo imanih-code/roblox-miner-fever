@@ -112,6 +112,17 @@ end
 
 -- Golpes ----------------------------------------------------------------------------
 
+local MINA_MIN, MINA_MAX = Config.Mapa.MinaMin, Config.Mapa.MinaMax
+
+local function dentroDeMina(p: Vector3): boolean
+	return p.X > MINA_MIN.X
+		and p.X < MINA_MAX.X
+		and p.Y > MINA_MIN.Y
+		and p.Y < MINA_MAX.Y
+		and p.Z > MINA_MIN.Z
+		and p.Z < MINA_MAX.Z
+end
+
 local function picarRoca(player: Player, punto: Vector3, nivel: number): boolean
 	local r = Config.RadioPicado
 	local region = Region3.new(punto - Vector3.one * r, punto + Vector3.one * r):ExpandToGrid(4)
@@ -129,13 +140,16 @@ local function picarRoca(player: Player, punto: Vector3, nivel: number): boolean
 					local centro = origen + Vector3.new(x - 0.5, y - 0.5, z - 0.5) * 4
 					local dist = (centro - punto).Magnitude
 					if dist <= r then
-						local roca = Config.Rocas[mat]
+						-- Solo se pica dentro de la mina; los cerros y el valle no.
+						local enMina = dentroDeMina(centro)
+						local roca = if enMina then Config.Rocas[mat] else nil
 						if roca and roca.Nivel <= nivel then
 							mats[x][y][z] = Enum.Material.Air
 							occs[x][y][z] = 0
 							rotos += 1
 						elseif dist < distBloqueo then
-							bloqueo = mat
+							-- Fuera de la mina cuenta como "no se puede picar" (Air como marca).
+							bloqueo = if enMina then mat else Enum.Material.Air
 							distBloqueo = dist
 						end
 					end

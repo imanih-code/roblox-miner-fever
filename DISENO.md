@@ -186,9 +186,14 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
 
 ## 11. Primera versión jugable (decisiones tomadas)
 
-- **Mapa:** campamento de pasto (no se pica) sobre roca imposible. La mina es un bloque de
-  160 × 160 studs y unos 90 de hondo, enfrente del campamento; solo se entra por la boca,
-  que baja con una rampa a una galería de inicio.
+- **Ambiente:** alta montaña helada, inspirada en La Rinconada (Perú): el campamento está en
+  un valle de tierra y nieve rodeado de cerros escarpados; al norte, el cerro de la mina con
+  glaciar en la cumbre. Nieva, hay bruma fría y un pueblo de casitas con techo de calamina.
+- **Mapa:** la mina es un bloque de 160 × 160 studs y unos 90 de hondo, bajo el cerro del
+  norte. Se entra a pie por un marco de madera en el acantilado; adentro la rampa baja a una
+  galería de inicio. Solo se pica dentro de la zona de la mina; cerros y valle no se rompen.
+- **Casco minero:** cada jugador lleva casco amarillo con lámpara al frente (haz hacia donde
+  mira y luz suave alrededor).
 - **Capas hechas:** Superficie (piedra, carbón y cobre) y Cuevas (roca dura, que pide pico
   de piedra; hierro, azufre y plata). Las de Profundo, Magma y Núcleo vienen después.
 - **Picado:** cada golpe borra la roca que tu pico puede romper en un radio de unos 4.6

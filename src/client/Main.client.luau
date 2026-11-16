@@ -1,14 +1,14 @@
 --[[
 	Punto de entrada del cliente de Fiebre Minera: arranca el HUD, los golpes
-	del pico y la oscuridad de la mina.
+	del pico y el ambiente (nevada arriba, oscuridad en la mina).
 ]]
 
 local Hud = require(script.Parent.Hud)
 local PicoCliente = require(script.Parent.PicoCliente)
-local Oscuridad = require(script.Parent.Oscuridad)
+local Ambiente = require(script.Parent.Ambiente)
 
 Hud.Start()
 PicoCliente.Start()
-Oscuridad.Start()
+Ambiente.Start()
 
 print("[Fiebre Minera] Cliente listo")

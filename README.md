@@ -11,15 +11,19 @@ minerales, precios, pico, mochila, lámpara) están en
 
 ## Qué hay jugable
 
+- **Alta montaña helada** (inspirada en los pueblos mineros de los Andes): un valle de tierra
+  y nieve rodeado de cerros escarpados, con nevada, bruma fría y un glaciar arriba. Pueblo de
+  casitas con techo de calamina, nieve en los techos, ventanas encendidas y chimeneas con humo.
 - **Campamento:** apareces mirando hacia la boca de la mina, con una fogata y el puesto del
   millonario (traje, sombrero de copa, cadena de oro y dos guardaespaldas).
-- **La mina:** bloque de terreno excavable bajo el campamento. Bajas por una rampa con
-  faroles hasta una galería de inicio. Bajo tierra se apaga el cielo y solo alumbra tu
-  lámpara (y los faroles).
+- **Casco minero:** todos llevan casco amarillo con lámpara al frente; alumbra hacia donde miras.
+- **La mina:** se entra a pie por un marco de madera en el acantilado; adentro una rampa con
+  faroles baja a una galería de inicio. Bajo tierra se apaga el cielo y solo alumbran las
+  lámparas y los faroles.
   - **Superficie** (piedra, cualquier pico): carbón y cobre.
   - **Cuevas** (roca dura, pide pico de piedra): hierro, azufre y plata.
   - **Roca imposible** (basalto): manchas y bordes que ningún pico rompe.
-  - El pasto y la roca imposible encierran la mina: solo se entra por la boca.
+  - Solo se pica dentro de la zona de la mina: los cerros y el valle no se rompen.
 - **Pico de madera:** clic para picar donde apuntas (alcance 12 studs). Cada golpe borra un
   poco de roca. Las piezas de mineral necesitan varios golpes y van a la mochila.
 - **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico y profundidad.
@@ -87,8 +91,9 @@ rojo build -o FiebreMinera.rbxlx
 ```
 src/
   shared/   Config (balance), Remotes, Format
-  server/   Main, PlayerData (guardado), MapaBuilder (terreno, mina, rampa, campamento),
+  server/   Main, PlayerData (guardado), MapaBuilder (cerros, valle, mina, entrada, cielo),
+            Pueblo (casitas), Casco (casco con lámpara),
             Vetas (piezas de mineral), PicoService (pico y golpes), Mochila, Millonario
   client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido),
-            Oscuridad (luz bajo tierra)
+            Ambiente (nevada arriba, oscuridad bajo tierra)
 ```

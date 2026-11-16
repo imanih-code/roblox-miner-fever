@@ -23,21 +23,33 @@ Config.TiempoReaparicion = 3
 -- todo lo que se pone encima (aparición, millonario, marco de la mina) se sube eso.
 Config.Mapa = {
 	Suelo = 2,
-	-- Suelo de pasto del campamento (no se puede picar).
-	SueloMin = Vector2.new(-160, -120), -- (x, z)
-	SueloMax = Vector2.new(160, 240),
+	-- Todo el mapa (x, z): valle del campamento rodeado de cerros helados.
+	SueloMin = Vector2.new(-256, -192),
+	SueloMax = Vector2.new(256, 320),
 	-- Zona excavable de la mina, bajo tierra. Afuera de ella todo es roca imposible.
 	MinaMin = Vector3.new(-80, -96, 40),
 	MinaMax = Vector3.new(80, -4, 200),
 	FondoBasalto = -112, -- hasta dónde llega la roca imposible
 
 	Aparicion = Vector3.new(0, 0, -30), -- campamento
-	Entrada = Vector3.new(0, 0, 20), -- boca de la mina: de aquí baja la rampa hacia +z
-	FondoRampa = Vector3.new(0, -18, 56), -- donde termina la rampa y empieza la galería
+	BocaZ = 27, -- marco de madera en la cara del acantilado (se entra a nivel del valle)
+	Entrada = Vector3.new(0, 0, 34), -- ya dentro del cerro, aquí empieza a bajar la rampa hacia +z
+	FondoRampa = Vector3.new(0, -18, 62), -- donde termina la rampa y empieza la galería
 	Millonario = Vector3.new(20, 0, 10),
 
 	-- Bajo esta altura (y) se apaga el sol y solo alumbra tu lámpara.
 	AlturaOscuridad = -8,
+}
+
+-- Cerros de la superficie (alta montaña helada). Solo se ven: no se pican.
+Config.Montanas = {
+	RadioValle = 90, -- valle plano alrededor del campamento
+	AlturaBorde = 150, -- cerros del borde del mapa
+	AcantiladoZ = 24, -- desde aquí sube el cerro de la mina, al norte
+	AlturaAcantilado = 75,
+	AlturaCumbre = 85, -- cumbre con glaciar encima de la mina
+	NieveDesde = 30, -- más arriba de esto, nieve (salvo en paredes muy empinadas)
+	GlaciarDesde = 115, -- y más arriba, hielo de glaciar
 }
 
 -- Rocas -------------------------------------------------------------------------
@@ -156,11 +168,16 @@ Config.RadioPicado = 4.6 -- radio de roca que borra cada golpe
 -- Mochila -----------------------------------------------------------------------------
 Config.MochilaInicial = 12 -- minerales chicos que caben
 
--- Lámpara -------------------------------------------------------------------------------
+-- Lámpara del casco ---------------------------------------------------------------------
 Config.Lampara = {
-	Alcance = 16,
-	Brillo = 1,
-	Color = Color3.fromRGB(255, 214, 150),
+	-- Haz hacia adelante.
+	Alcance = 32,
+	Angulo = 70,
+	Brillo = 2.2,
+	-- Luz suave alrededor del minero.
+	AlcanceCerca = 10,
+	BrilloCerca = 0.5,
+	Color = Color3.fromRGB(255, 226, 170),
 }
 
 return Config

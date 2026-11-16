@@ -61,7 +61,7 @@ para lo principal (picar, cargar y vender minerales).
   madera → piedra → hierro → oro → diamante (y quizá uno mítico).
 - **Durabilidad:** cada golpe la gasta. Con 0 ya no pica: hay que repararlo con el herrero
   (cobra dinero) o con hierro que hayas minado.
-- Se mejora con el herrero (dinero + minerales del nivel anterior, a decidir).
+- Se mejora con el herrero (por ahora solo con dinero; ver sección 11).
 
 ### Dinamita
 - Se compra; se acumula en tu inventario si la llevas.
@@ -201,7 +201,20 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
 - **Mochila:** 12 minerales chicos; no se guarda al salir del juego.
 - **Precios iniciales:** carbón $4, cobre $10, azufre $14, hierro $18, plata $45.
 - **Lámpara:** por ahora siempre prendida; el carbón como combustible llega después.
-- **Aún no:** herrero, durabilidad, dinamita, minerales grandes, derrumbe, tiendas, banca y
+- **Herrero:** la mejora del pico cuesta solo dinero (por ahora sin minerales):
+  piedra $150, hierro $600, oro $2,000, diamante $6,000. El pico nuevo sale con la
+  durabilidad llena.
+
+  | Pico | Golpes/s | Durabilidad | Reparar entero |
+  |---|---|---|---|
+  | Madera | 2.0 | 150 | $15 |
+  | Piedra | 2.4 | 300 | $40 |
+  | Hierro | 2.9 | 550 | $120 |
+  | Oro | 3.4 | 900 | $300 |
+  | Diamante | 4.2 | 1500 | $700 |
+
+  Reparar cobra según lo gastado. Cada hierro de la mochila repara el 35 % del pico.
+- **Aún no:** dinamita, minerales grandes, capas más hondas, derrumbe, tiendas, banca y
   sabotaje.
 
 ---

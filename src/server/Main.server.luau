@@ -1,6 +1,6 @@
 --[[
 	Punto de entrada del servidor de Fiebre Minera: construye el mapa y la mina,
-	pone al millonario, arranca el pico y maneja entradas, salidas y
+	pone al millonario y al herrero, arranca el pico y maneja entradas, salidas y
 	reapariciones de jugadores (a cada personaje le pone casco con lámpara y pico).
 ]]
 
@@ -17,11 +17,13 @@ local Mochila = require(script.Parent.Mochila)
 local PicoService = require(script.Parent.PicoService)
 local Millonario = require(script.Parent.Millonario)
 local Casco = require(script.Parent.Casco)
+local Herrero = require(script.Parent.Herrero)
 
 Players.RespawnTime = Config.TiempoReaparicion
 
 local mapa = MapaBuilder.Build()
 Millonario.Build(mapa.mapa)
+Herrero.Build(mapa.mapa)
 PicoService.Init(mapa.minerales)
 
 local function onCharacter(player: Player, character: Model)
@@ -44,6 +46,7 @@ local function onPlayerAdded(player: Player)
 	leaderstats.Parent = player
 
 	PlayerData.Sync(player)
+	PicoService.Sync(player)
 	Mochila.Crear(player)
 
 	player.CharacterAdded:Connect(function(character)
@@ -57,7 +60,7 @@ end
 local function onPlayerRemoving(player: Player)
 	PlayerData.Save(player)
 	PlayerData.Release(player)
-	Mochila.Quitar(player)
+	Mochila.Liberar(player)
 end
 
 Players.PlayerAdded:Connect(onPlayerAdded)
@@ -92,7 +95,21 @@ end)
 
 -- Ganchos de prueba en Studio (barra de comandos con el juego corriendo):
 --   workspace:SetAttribute("DarDinero", 500)
+--   workspace:SetAttribute("PonerDurabilidad", 3)   (durabilidad del pico de todos)
 if RunService:IsStudio() then
+	workspace:GetAttributeChangedSignal("PonerDurabilidad"):Connect(function()
+		local valor = workspace:GetAttribute("PonerDurabilidad")
+		if type(valor) == "number" and valor >= 0 then
+			workspace:SetAttribute("PonerDurabilidad", nil)
+			for _, player in Players:GetPlayers() do
+				local data = PlayerData.Get(player)
+				if data then
+					data.DurabilidadPico = math.min(math.floor(valor), Config.Picos[data.NivelPico].Durabilidad)
+					PicoService.Sync(player)
+				end
+			end
+		end
+	end)
 	workspace:GetAttributeChangedSignal("DarDinero"):Connect(function()
 		local cantidad = workspace:GetAttribute("DarDinero")
 		if type(cantidad) == "number" and cantidad > 0 then

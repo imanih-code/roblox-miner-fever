@@ -64,7 +64,25 @@ function Mochila.Usada(player: Player): number
 	return total(contenidos[player] or {})
 end
 
-function Mochila.Quitar(player: Player)
+function Mochila.Cantidad(player: Player, id: string): number
+	local c = contenidos[player]
+	return c and c[id] or 0
+end
+
+-- Saca hasta `n` piezas de un mineral. Devuelve cuántas sacó.
+function Mochila.Sacar(player: Player, id: string, n: number): number
+	local c = contenidos[player]
+	local hay = c and c[id] or 0
+	local sacadas = math.min(hay, n)
+	if sacadas > 0 then
+		c[id] = hay - sacadas
+		sync(player)
+	end
+	return sacadas
+end
+
+-- El jugador salió: se olvida su mochila.
+function Mochila.Liberar(player: Player)
 	contenidos[player] = nil
 end
 

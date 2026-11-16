@@ -2,7 +2,7 @@
 	HUD de Fiebre Minera: dinero, mochila, pico y profundidad (arriba a la
 	izquierda) y avisos (toasts) arriba al centro.
 	El estado llega como atributos del jugador: Dinero, MochilaUsada,
-	MochilaMax y NombrePico.
+	MochilaMax, NombrePico, Durabilidad y DurabilidadMax (el pico).
 ]]
 
 local Players = game:GetService("Players")
@@ -72,6 +72,14 @@ local function text(parent: Instance, props: { [string]: any }): TextLabel
 	return l
 end
 
+-- Para los menús (herrero, etc.): mismas piezas y colores que el HUD.
+Hud.corner = corner
+Hud.stroke = stroke
+Hud.frame = frame
+Hud.text = text
+Hud.Colors = { PANEL = PANEL, TEXT = TEXT, ORO = ORO, GOOD = GOOD, BAD = BAD, INFO = INFO }
+Hud.TITLE_FONT = TITLE_FONT
+
 -- Construcción ---------------------------------------------------------------------
 
 local gui: ScreenGui
@@ -79,6 +87,7 @@ local dineroLabel: TextLabel
 local mochilaLabel: TextLabel
 local mochilaStroke: UIStroke
 local picoLabel: TextLabel
+local picoStroke: UIStroke
 local profundidadChip: Frame
 local profundidadLabel: TextLabel
 local toastHolder: Frame
@@ -147,8 +156,8 @@ local function build()
 
 	local _, l1, s1 = chip(columna, 2, TEXT)
 	mochilaLabel, mochilaStroke = l1, s1
-	local _, l2 = chip(columna, 3, Color3.fromRGB(230, 190, 140))
-	picoLabel = l2
+	local _, l2, s2 = chip(columna, 3, Color3.fromRGB(230, 190, 140))
+	picoLabel, picoStroke = l2, s2
 	local f3, l3 = chip(columna, 4, INFO)
 	profundidadChip, profundidadLabel = f3, l3
 
@@ -179,7 +188,11 @@ local function refresh()
 	local llena = max > 0 and usada >= max
 	mochilaLabel.TextColor3 = if llena then BAD else TEXT
 	mochilaStroke.Color = if llena then BAD else TEXT
-	picoLabel.Text = "⛏ " .. (player:GetAttribute("NombrePico") or "Sin pico")
+	local dur, durMax = num("Durabilidad"), num("DurabilidadMax")
+	local gastado = durMax > 0 and dur <= durMax * Config.DurabilidadBaja
+	picoLabel.Text = string.format("⛏ %s · %d/%d", player:GetAttribute("NombrePico") or "Sin pico", dur, durMax)
+	picoLabel.TextColor3 = if gastado then BAD else Color3.fromRGB(230, 190, 140)
+	picoStroke.Color = picoLabel.TextColor3
 end
 
 local function refreshProfundidad()

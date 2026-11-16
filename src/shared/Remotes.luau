@@ -3,6 +3,8 @@
 	  Aviso  (s -> c)  texto y tipo ("good", "bad", "info", "gold") de un aviso
 	  Picar  (c -> s)  golpe de pico: punto donde pegó y la pieza de mineral (o nil si es roca)
 	  Golpe  (s -> c)  el golpe sirvió: punto y color, para las chispas y el sonido
+	  AbrirHerrero (s -> c)  abrir el menú del herrero
+	  Herrero      (c -> s)  en el menú del herrero: "Mejorar", "Reparar" o "RepararHierro"
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12,6 +14,8 @@ local NAMES = {
 	"Aviso",
 	"Picar",
 	"Golpe",
+	"AbrirHerrero",
+	"Herrero",
 }
 
 local folder: Folder

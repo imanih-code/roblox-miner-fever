@@ -36,6 +36,7 @@ Config.Mapa = {
 	Entrada = Vector3.new(0, 0, 34), -- ya dentro del cerro, aquí empieza a bajar la rampa hacia +z
 	FondoRampa = Vector3.new(0, -18, 62), -- donde termina la rampa y empieza la galería
 	Millonario = Vector3.new(20, 0, 10),
+	Herrero = Vector3.new(-20, 0, 10),
 
 	-- Bajo esta altura (y) se apaga el sol y solo alumbra tu lámpara.
 	AlturaOscuridad = -8,
@@ -151,15 +152,66 @@ Config.Minerales = {
 }
 
 -- Pico ------------------------------------------------------------------------------
+-- Cadencia: segundos entre golpes. Durabilidad: golpes que aguanta antes de romperse.
+-- Precio: lo que cobra el herrero por mejorarlo a ese nivel (el de madera es el inicial).
+-- Reparar: lo que cuesta repararlo entero (si le falta la mitad, cobra la mitad).
 Config.Picos = {
 	{
 		Nombre = "Pico de madera",
 		Nivel = 1,
-		Cadencia = 0.5, -- segundos entre golpes
+		Cadencia = 0.5,
+		Durabilidad = 150,
+		Precio = 0,
+		Reparar = 15,
 		Color = Color3.fromRGB(150, 104, 62),
+		Material = Enum.Material.Wood,
 	},
-	-- Siguientes niveles (piedra, hierro, oro, diamante) cuando exista el herrero.
+	{
+		Nombre = "Pico de piedra",
+		Nivel = 2,
+		Cadencia = 0.42,
+		Durabilidad = 300,
+		Precio = 150,
+		Reparar = 40,
+		Color = Color3.fromRGB(128, 128, 132),
+		Material = Enum.Material.Slate,
+	},
+	{
+		Nombre = "Pico de hierro",
+		Nivel = 3,
+		Cadencia = 0.35,
+		Durabilidad = 550,
+		Precio = 600,
+		Reparar = 120,
+		Color = Color3.fromRGB(200, 204, 212),
+		Material = Enum.Material.Metal,
+	},
+	{
+		Nombre = "Pico de oro",
+		Nivel = 4,
+		Cadencia = 0.29,
+		Durabilidad = 900,
+		Precio = 2000,
+		Reparar = 300,
+		Color = Color3.fromRGB(255, 196, 40),
+		Material = Enum.Material.Metal,
+	},
+	{
+		Nombre = "Pico de diamante",
+		Nivel = 5,
+		Cadencia = 0.24,
+		Durabilidad = 1500,
+		Precio = 6000,
+		Reparar = 700,
+		Color = Color3.fromRGB(110, 230, 255),
+		Material = Enum.Material.Glass,
+		Brillo = true,
+	},
 }
+-- Cada hierro de la mochila repara esta parte del pico (0.35 = 35 %).
+Config.RepararPorHierro = 0.35
+-- Con esta parte de durabilidad o menos, el HUD la pone en rojo y avisa.
+Config.DurabilidadBaja = 0.2
 -- Nombre de cada nivel de pico, para los avisos ("necesitas un pico de piedra").
 Config.NivelesPico = { "madera", "piedra", "hierro", "oro", "diamante" }
 Config.Alcance = 12 -- studs desde la cabeza hasta donde pegas

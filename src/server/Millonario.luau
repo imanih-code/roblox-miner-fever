@@ -4,8 +4,6 @@
 	que traes en la mochila con el aviso "Vender minerales".
 ]]
 
-local Players = game:GetService("Players")
-
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Config = require(Shared.Config)
 local Remotes = require(Shared.Remotes)
@@ -13,69 +11,13 @@ local Format = require(Shared.Format)
 
 local PlayerData = require(script.Parent.PlayerData)
 local Mochila = require(script.Parent.Mochila)
+local Npc = require(script.Parent.Npc)
 
 local Millonario = {}
 
-local IDLE_ANIM = "rbxassetid://507766388"
 local ORO = Color3.fromRGB(255, 196, 40)
-local PIEL = Color3.fromRGB(234, 184, 146)
-
--- Pega una pieza decorativa a una parte del cuerpo.
-local function pegar(cuerpo: BasePart, props: { [string]: any }, offset: CFrame): Part
-	local p = Instance.new("Part")
-	p.CanCollide = false
-	p.CanQuery = false
-	p.Massless = true
-	p.CastShadow = false
-	p.TopSurface = Enum.SurfaceType.Smooth
-	p.BottomSurface = Enum.SurfaceType.Smooth
-	for k, v in props do
-		(p :: any)[k] = v
-	end
-	p.CFrame = cuerpo.CFrame * offset
-	local w = Instance.new("WeldConstraint")
-	w.Part0 = cuerpo
-	w.Part1 = p
-	w.Parent = p
-	p.Parent = cuerpo.Parent
-	return p
-end
-
-local function persona(nombre: string, traje: Color3, piel: Color3): Model
-	local desc = Instance.new("HumanoidDescription")
-	desc.HeadColor = piel
-	desc.TorsoColor = traje
-	desc.LeftArmColor = traje
-	desc.RightArmColor = traje
-	desc.LeftLegColor = traje
-	desc.RightLegColor = traje
-	local model = Players:CreateHumanoidModelFromDescription(desc, Enum.HumanoidRigType.R15)
-	model.Name = nombre
-	local animate = model:FindFirstChild("Animate")
-	if animate then
-		animate:Destroy()
-	end
-	local hum = model:FindFirstChildOfClass("Humanoid") :: Humanoid
-	hum.DisplayName = nombre
-	return model
-end
-
--- Coloca el modelo parado en el suelo, mirando hacia `mira`.
-local function colocar(model: Model, pos: Vector3, mira: Vector3)
-	local root = model:FindFirstChild("HumanoidRootPart") :: BasePart
-	root.Anchored = true
-	local cf, size = model:GetBoundingBox()
-	local alto = root.Position.Y - (cf.Position.Y - size.Y / 2)
-	local destino = Vector3.new(pos.X, pos.Y + alto, pos.Z)
-	model:PivotTo(CFrame.lookAt(destino, Vector3.new(mira.X, destino.Y, mira.Z)))
-	local hum = model:FindFirstChildOfClass("Humanoid") :: Humanoid
-	local animator = hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", hum)
-	local anim = Instance.new("Animation")
-	anim.AnimationId = IDLE_ANIM
-	local track = (animator :: Animator):LoadAnimation(anim)
-	track.Looped = true
-	track:Play()
-end
+local PIEL = Npc.PIEL
+local pegar, persona, colocar = Npc.Pegar, Npc.Persona, Npc.Colocar
 
 local function crearMillonario(): Model
 	local model = persona("El Millonario", Color3.fromRGB(34, 32, 48), PIEL)
@@ -173,21 +115,7 @@ function Millonario.Build(carpeta: Instance)
 	prompt.Triggered:Connect(vender)
 
 	-- Letrero sobre el puesto.
-	local cartel = Instance.new("BillboardGui")
-	cartel.Size = UDim2.fromOffset(260, 60)
-	cartel.StudsOffset = Vector3.new(0, 8, 0)
-	cartel.MaxDistance = 120
-	cartel.Adornee = mostrador
-	cartel.Parent = mostrador
-	local texto = Instance.new("TextLabel")
-	texto.Size = UDim2.fromScale(1, 1)
-	texto.BackgroundTransparency = 1
-	texto.Font = Enum.Font.FredokaOne
-	texto.TextScaled = true
-	texto.TextColor3 = ORO
-	texto.TextStrokeTransparency = 0.3
-	texto.Text = "💰 Compro minerales"
-	texto.Parent = cartel
+	Npc.Cartel(mostrador, "💰 Compro minerales", ORO, 8)
 
 	puesto.Parent = carpeta
 

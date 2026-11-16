@@ -24,16 +24,24 @@ minerales, precios, pico, mochila, lámpara) están en
   - **Cuevas** (roca dura, pide pico de piedra): hierro, azufre y plata.
   - **Roca imposible** (basalto): manchas y bordes que ningún pico rompe.
   - Solo se pica dentro de la zona de la mina: los cerros y el valle no se rompen.
-- **Pico de madera:** clic para picar donde apuntas (alcance 12 studs). Cada golpe borra un
-  poco de roca. Las piezas de mineral necesitan varios golpes y van a la mochila.
-- **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico y profundidad.
+- **Pico:** clic para picar donde apuntas (alcance 12 studs). Cada golpe borra un poco de
+  roca. Las piezas de mineral necesitan varios golpes y van a la mochila.
+  - Cinco niveles con su skin: madera → piedra → hierro → oro → diamante. Cada uno pica más
+    rápido y aguanta más. El de piedra ya rompe la roca dura de Cuevas.
+  - **Durabilidad:** cada golpe gasta 1. Con 0 el pico no pica hasta repararlo.
+- **El herrero** (a la izquierda de la boca de la mina, con su fragua): "Hablar con el
+  herrero" abre su menú para **mejorar** el pico, **repararlo** con dinero (según lo gastado)
+  o **repararlo con hierro** de la mochila (cada hierro repara 35 %).
+- **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico con su durabilidad y
+  profundidad.
 - **El millonario:** "Vender minerales" junto a su mostrador vende toda la mochila.
 - Los minerales Raros o mejores se anuncian a todo el servidor.
-- El dinero se guarda con DataStore. La mochila no: lo que no vendas se pierde al salir.
+- Se guardan el dinero y el pico (nivel y durabilidad). La mochila no: lo que no vendas se
+  pierde al salir.
 
-**Todavía no:** herrero (mejorar y reparar el pico), durabilidad del pico, dinamita, carbón
-como combustible de la lámpara, minerales grandes en las manos, derrumbe que regenera la
-mina, tiendas y banca de pesas, sabotaje.
+**Todavía no:** dinamita, carbón como combustible de la lámpara, minerales grandes en las
+manos, capas más hondas (Profundo, Magma, Núcleo), derrumbe que regenera la mina, tiendas y
+banca de pesas, sabotaje.
 
 ## Preparar el entorno
 
@@ -70,7 +78,8 @@ mina, tiendas y banca de pesas, sabotaje.
    arrancar el servidor; la Baseplate de la plantilla se quita sola.
 
 Pruebas rápidas en Studio (barra de comandos con el juego corriendo):
-`workspace:SetAttribute("DarDinero", 500)` (servidor: dinero a todos) y
+`workspace:SetAttribute("DarDinero", 500)` (servidor: dinero a todos),
+`workspace:SetAttribute("PonerDurabilidad", 3)` (servidor: durabilidad del pico de todos) y
 `workspace:SetAttribute("PruebaPicar", Vector3.new(x, y, z))` (cliente: pica hacia ese punto
 como si fuera un clic, con el pico en la mano).
 
@@ -93,7 +102,8 @@ src/
   shared/   Config (balance), Remotes, Format
   server/   Main, PlayerData (guardado), MapaBuilder (cerros, valle, mina, entrada, cielo),
             Pueblo (casitas), Casco (casco con lámpara),
-            Vetas (piezas de mineral), PicoService (pico y golpes), Mochila, Millonario
-  client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido),
+            Vetas (piezas de mineral), PicoService (pico, golpes y durabilidad), Mochila,
+            Npc (piezas para armar NPC), Millonario, Herrero (mejorar y reparar)
+  client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido), HerreroMenu,
             Ambiente (nevada arriba, oscuridad bajo tierra)
 ```

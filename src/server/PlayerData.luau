@@ -32,6 +32,7 @@ local function defaults()
 	return {
 		Dinero = Config.DineroInicial,
 		NivelPico = 1,
+		DurabilidadPico = Config.Picos[1].Durabilidad,
 		TotalGanado = 0,
 		UltimaVez = 0,
 	}
@@ -48,6 +49,11 @@ local function merge(saved: any)
 		end
 	end
 	data.NivelPico = math.clamp(math.floor(data.NivelPico), 1, #Config.Picos)
+	local max = Config.Picos[data.NivelPico].Durabilidad
+	if type(saved.DurabilidadPico) ~= "number" then
+		data.DurabilidadPico = max -- guardado viejo, sin durabilidad: pico nuevo
+	end
+	data.DurabilidadPico = math.clamp(math.floor(data.DurabilidadPico), 0, max)
 	return data
 end
 

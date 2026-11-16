@@ -14,6 +14,6 @@
   - El terreno lleno hasta y = 0 (celdas completas) se ve con la superficie en y = 2; lo mismo pasa con pisos excavados. Por eso existe `Config.Mapa.Suelo`.
   - `screen_capture` con `camera_position` no dibuja el texto de los SurfaceGui (letreros): para revisarlos, mueve la cámara del cliente (CameraType Scriptable) y captura sin cámara forzada.
   - `screen_capture` justo después de cambiar luces o de llegar a un lugar nuevo puede salir negro o con la luz vieja: espera y vuelve a capturar.
-  - Algunos emojis no se ven en Roblox (por ejemplo 🪱, ✦, 🌫); prefiere ⭐ 🐛 🛶 🏞.
+  - Algunos emojis y símbolos no se ven en Roblox (por ejemplo 🪱, ✦, 🌫, ✕); prefiere ⭐ 🐛 🛶 🏞.
 - Commit solo cuando el usuario lo pida; pedir permiso antes de guardar el lugar en Roblox.
 - Textos del juego y comentarios en español.

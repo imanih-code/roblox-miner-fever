@@ -1,9 +1,10 @@
 --[[
 	El pico: lo crea, lo da a cada personaje y valida cada golpe.
 	El cliente dice dónde pegó (y si fue en una pieza de mineral); el servidor
-	revisa distancia, cadencia y nivel del pico, y entonces:
+	revisa distancia, cadencia, durabilidad y nivel del pico, y entonces:
 	  - roca: borra los vóxeles que el pico puede romper dentro de un radio
 	  - mineral: le quita un golpe; al llegar a 0 se suelta y va a la mochila
+	Cada golpe que sirve gasta 1 de durabilidad; con 0 el pico ya no pica.
 ]]
 
 local Players = game:GetService("Players")
@@ -59,21 +60,32 @@ local function crearPico(pico): Tool
 	mango.Massless = true
 	mango.Parent = tool
 
+	-- La cabeza tiene el color y el material de su nivel (la skin del pico).
 	local cabeza = Instance.new("Part")
 	cabeza.Name = "Cabeza"
 	cabeza.Size = Vector3.new(0.45, 0.5, 3.2)
 	cabeza.Color = pico.Color
-	cabeza.Material = Enum.Material.Wood
+	cabeza.Material = pico.Material
 	cabeza.CanCollide = false
 	cabeza.Massless = true
 	cabeza.CFrame = mango.CFrame * CFrame.new(0, 1.9, 0)
 	cabeza.Parent = tool
+	if pico.Brillo then
+		local destellos = Instance.new("Sparkles")
+		destellos.SparkleColor = pico.Color
+		destellos.Parent = cabeza
+		local luz = Instance.new("PointLight")
+		luz.Color = pico.Color
+		luz.Range = 6
+		luz.Brightness = 0.8
+		luz.Parent = cabeza
+	end
 	for _, z in { -1.75, 1.75 } do
 		local punta = Instance.new("WedgePart")
 		punta.Name = "Punta"
 		punta.Size = Vector3.new(0.35, 0.45, 0.6)
 		punta.Color = pico.Color
-		punta.Material = Enum.Material.Wood
+		punta.Material = pico.Material
 		punta.CanCollide = false
 		punta.Massless = true
 		-- La cuña apunta hacia afuera y un poco hacia abajo.
@@ -106,8 +118,33 @@ function PicoService.Dar(player: Player)
 	if backpack then
 		crearPico(pico).Parent = backpack
 	end
+	PicoService.Sync(player)
+end
+
+-- Muestra el pico en los atributos del jugador (HUD y menú del herrero).
+function PicoService.Sync(player: Player)
+	local data = PlayerData.Get(player)
+	local pico = picoDe(player)
 	player:SetAttribute("NivelPico", pico.Nivel)
 	player:SetAttribute("NombrePico", pico.Nombre)
+	player:SetAttribute("Durabilidad", data and data.DurabilidadPico or pico.Durabilidad)
+	player:SetAttribute("DurabilidadMax", pico.Durabilidad)
+end
+
+-- Gasta un punto de durabilidad por golpe que sirvió.
+local function gastar(player: Player)
+	local data = PlayerData.Get(player)
+	if not data then
+		return
+	end
+	local max = picoDe(player).Durabilidad
+	data.DurabilidadPico = math.max(0, data.DurabilidadPico - 1)
+	player:SetAttribute("Durabilidad", data.DurabilidadPico)
+	if data.DurabilidadPico == 0 then
+		aviso(player, "💥 ¡Se rompió tu pico! Llévalo con el herrero para repararlo.", "bad")
+	elseif data.DurabilidadPico == math.floor(max * Config.DurabilidadBaja) then
+		aviso(player, "Tu pico está muy gastado: repáralo pronto con el herrero.", "bad")
+	end
 end
 
 -- Golpes ----------------------------------------------------------------------------
@@ -229,6 +266,14 @@ local function onPicar(player: Player, punto: any, pieza: any)
 		return
 	end
 	ultimoGolpe[player] = ahora
+	local data = PlayerData.Get(player)
+	if not data then
+		return
+	end
+	if data.DurabilidadPico <= 0 then
+		avisoLento(player, "Tu pico está roto: llévalo con el herrero para repararlo.")
+		return
+	end
 
 	local ok = false
 	local color: Color3
@@ -248,6 +293,7 @@ local function onPicar(player: Player, punto: any, pieza: any)
 		ok = picarRoca(player, punto, pico.Nivel)
 	end
 	if ok then
+		gastar(player)
 		Remotes.Golpe:FireAllClients(punto, color)
 	end
 end

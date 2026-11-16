@@ -1,0 +1,193 @@
+# Fiebre Minera — documento de diseño
+
+Juego de Roblox: eres un minero en una mina profunda y compartida por todo el servidor.
+Abres camino con tu pico (o con dinamita), buscas minerales, los cargas hasta la salida y
+se los vendes al millonario. Con el dinero mejoras tu pico, compras dinamita y mejoras tu
+banca de pesas en el campamento para picar minerales más rápido y cargarlos mejor.
+Entre mineros hay sabotaje: tirarle el mineral al que lo carga, tapar túneles con dinamita
+y encargos secretos del millonario.
+
+Principio de diseño: **mecánicas simples**. Todo lo que se farmea aparte tiene que servir
+para lo principal (picar, cargar y vender minerales).
+
+---
+
+## 1. Bucle principal
+
+1. Sales de tu tienda en el campamento y entras a la mina.
+2. Picas (o dinamitas) para abrir camino y buscar vetas de minerales.
+3. Cargas los minerales: los chicos en la mochila, los grandes en las manos.
+4. Llegas a la salida y se los vendes al millonario.
+5. Con el dinero: mejoras o reparas el pico con el herrero, compras dinamita y mejoras tu
+   banca de pesas.
+6. Mientras descansas en el campamento, tu personaje entrena solo y gana Fuerza.
+
+---
+
+## 2. La mina
+
+- **Excavable de verdad.** Está hecha con el terreno de Roblox (vóxeles): picar o dinamitar
+  borra terreno (`Terrain:FillBall(..., Enum.Material.Air)`), así que cada jugador abre sus
+  propios túneles. No hay caminos fijos.
+- **Compartida por el servidor:** lo que uno abre, otro lo puede usar.
+- **Oscura:** bajo tierra no hay luz; tu lámpara alumbra alrededor.
+- **Capas por profundidad** (más hondo = minerales más valiosos, roca más dura):
+
+| Capa | Minerales | Pico mínimo |
+|---|---|---|
+| Superficie | carbón, cobre | madera |
+| Cuevas | hierro, plata, azufre | piedra |
+| Profundo | oro, amatista | hierro |
+| Magma | rubí, esmeralda, diamante | oro |
+| Núcleo | minerales míticos que brillan | diamante |
+
+- **Tipos de roca:**
+  - **Piedra normal:** se pica con cualquier pico; tarda según el nivel del pico.
+  - **Roca dura:** solo la pica un pico de cierto nivel (se ve distinta por capa).
+  - **Roca imposible:** basalto negro con vetas, visiblemente diferente. Ningún pico la
+    rompe; la dinamita tampoco. Obliga a rodear.
+- **Derrumbe (renovación):** cada cierto tiempo (por ejemplo, 20 min) el servidor avisa
+  "derrumbe en 2 min" y la mina se regenera con minerales nuevos. Así nunca se acaba y hay un
+  momento de "último viaje" antes del derrumbe.
+
+---
+
+## 3. Herramientas
+
+### Pico
+- Sirve para picar piedra y minerales.
+- **Nivel del pico:** da **velocidad de picado** y **durabilidad** (vida útil), parecido a
+  Minecraft. Cada nivel tiene su **skin** para que se note cuál es mejor:
+  madera → piedra → hierro → oro → diamante (y quizá uno mítico).
+- **Durabilidad:** cada golpe la gasta. Con 0 ya no pica: hay que repararlo con el herrero
+  (cobra dinero) o con hierro que hayas minado.
+- Se mejora con el herrero (dinero + minerales del nivel anterior, a decidir).
+
+### Dinamita
+- Se compra; se acumula en tu inventario si la llevas.
+- **Precio medio:** ni tan barata como para dinamitar la mina entera, ni tan cara como para
+  usarla una vez en la vida.
+- **Qué hace:**
+  - Abre un hueco grande (no rompe la roca imposible).
+  - **Suelta pedruscos con física** que ruedan y pueden **tapar túneles**: sirve para avanzar
+    rápido o para trolear a otros.
+- **Para que el troleo no frustre:** los derrumbes de dinamita en el túnel principal se
+  limpian solos después de un rato.
+- El herrero también la fabrica más barata si le llevas azufre (pólvora).
+
+### Lámpara
+- Alumbra alrededor tuyo en la oscuridad.
+- Usa carbón como combustible (se recarga con carbón minado).
+- Se mejora: más alcance y más duración.
+
+### Mochila
+- Espacio limitado para minerales chicos. Se mejora para llevar más.
+- Los minerales grandes (gemas, míticos) **no caben**: se cargan en las manos, se ven
+  brillando y te hacen más lento.
+
+---
+
+## 4. Minerales
+
+- Muchos tipos, cada uno con su rareza. Más raro = más valioso y más vistoso (brillo,
+  partículas, tamaño).
+- Cuando alguien saca uno raro, **el servidor avisa a todos**.
+- **Los comunes alimentan lo principal** (para que farmearlos valga la pena):
+  - **Carbón** → combustible de la lámpara.
+  - **Hierro** → reparar el pico sin pagar al herrero.
+  - **Azufre** → dinamita más barata con el herrero.
+- Los raros son los que dan dinero de verdad.
+
+---
+
+## 5. La salida de la mina
+
+- **El millonario:** NPC con skin de rico (traje, sombrero, cadena de oro) en su puesto,
+  con **guardaespaldas**. Le llevas minerales y te paga. Si llegas con el mineral, cobras.
+- **El herrero:** mejora y repara el pico, vende dinamita.
+- (Opcional) Tienda de mejoras: lámpara, mochila, botas, casco.
+
+---
+
+## 6. El campamento
+
+- Afuera de la mina, junto al millonario. **Cada jugador tiene su tienda**, chiquitas y muy
+  juntas, para que todos se vean.
+- En tu tienda está tu **banca de pesas**.
+
+### Banca de pesas (Fuerza)
+- **Un solo ejercicio para todos: press de banca.**
+- **El personaje entrena solo** mientras está en la banca y gana Fuerza por segundo.
+- **Mejora de la banca:** solo cambia la skin de la misma máquina, y más nivel = más Fuerza
+  por segundo. Nada más (no cambia el ejercicio).
+  Ejemplo de skins: banca de tablas con piedras → banca de metal con discos → banca
+  cromada → banca de oro.
+- **Anti-AFK:**
+  - **Clics de bonus eventuales:** de vez en cuando aparece algo para clickear que da un
+    extra de Fuerza (opcional para el jugador).
+  - **Evento de cansancio:** cada ciertos minutos aparece un botón en **cualquier parte de
+    la pantalla**. Si no le das clic a tiempo, tu personaje **se baja de la banca** y deja
+    de entrenar.
+- **Qué da la Fuerza** (solo en minerales; la piedra no cambia):
+  - **Picas minerales más rápido** (por ejemplo, +3 % por nivel).
+  - **Cargas mejor:** el mineral pesado te frena menos y puedes cargar piezas más grandes.
+  - **No sube la velocidad base ni el picado de piedra.** Así un jugador nuevo abre camino
+    igual que uno viejo y la persecución sigue siendo justa.
+- **Curva:** cada nivel de Fuerza cuesta más que el anterior; tope razonable (por ejemplo,
+  nivel 50).
+- Se ve: título sobre la cabeza (Novato, Picador, Fortachón, Bestia, Titán) y tablero de
+  los más fuertes en el campamento.
+
+---
+
+## 7. Moverse por la mina
+
+- **Sin velocidad base farmeable** (rompería la persecución).
+- **Sprint con resistencia:** un sprint corto que gasta energía; se mejora cuánto dura y
+  qué tan rápido se recupera.
+- **Atajos:** escaleras, cuerdas, rieles con carrito y elevadores por capa (se desbloquean
+  con dinero). La dinamita de otros los puede volar.
+- **Botas y casco** (opcionales): trepar más rápido / aguantar mejor explosiones y
+  derrumbes.
+
+---
+
+## 8. Sabotaje (inspirado en Saboteur, versión simple)
+
+- **Golpe con el pico:** si le pegas a un minero que **carga un mineral en las manos**, lo
+  suelta y cualquiera lo puede agarrar.
+- **Dinamita contra otros:** tapar el túnel por donde viene alguien o derrumbarle la salida.
+- **Encargos secretos del millonario:** de vez en cuando le susurra a **un solo jugador**:
+  "que [fulano] no llegue con su rubí y te pago". Nadie más sabe quién lo recibió.
+
+---
+
+## 9. Qué se guarda entre partidas
+
+Dinero, nivel del pico (y su durabilidad), dinamita guardada, lámpara, mochila, nivel de
+la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales.
+
+---
+
+## 10. Técnica (Roblox)
+
+- Luau sincronizado con Rojo; la fuente de verdad es `src/`.
+- Terreno vóxel para la mina: picar = borrar una esfera chica de terreno en el punto del
+  golpe; dinamita = esfera grande + pedruscos sueltos con física.
+- Minerales: piezas o modelos incrustados en el terreno (generados por código al construir
+  o al regenerar la mina), con brillo y partículas según la rareza.
+- Validación en el servidor: el cliente dice dónde pica; el servidor revisa distancia,
+  cadencia, nivel del pico, material de la roca y durabilidad.
+- Oscuridad: iluminación baja bajo tierra; la lámpara es una luz en el personaje.
+- Reutilizable del proyecto anterior (Ajolotario): avisos (toasts), menús, guardado con
+  DataStore, avisos al servidor de rarezas, patrón de servicios.
+
+---
+
+## 11. Pendiente de decidir
+
+- Nombre final del juego (repo: `roblox-miner-fever`).
+- Lista exacta de minerales, precios y rarezas.
+- Precio de la dinamita y de cada nivel de pico/banca.
+- Cuánto dura una "temporada" de la mina antes del derrumbe.
+- Cuántos jugadores por servidor (tamaño de la mina y del campamento).

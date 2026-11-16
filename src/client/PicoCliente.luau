@@ -65,7 +65,7 @@ local function golpear(origen: Vector3, direccion: Vector3)
 		return
 	end
 	local pieza = nil
-	if hit.Instance:GetAttribute("Mineral") then
+	if hit.Instance:GetAttribute("Mineral") or hit.Instance:GetAttribute("Pedrusco") then
 		pieza = hit.Instance
 	elseif hit.Instance ~= workspace.Terrain then
 		return

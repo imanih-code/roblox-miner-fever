@@ -4,7 +4,10 @@
 	  Picar  (c -> s)  golpe de pico: punto donde pegó y la pieza de mineral (o nil si es roca)
 	  Golpe  (s -> c)  el golpe sirvió: punto y color, para las chispas y el sonido
 	  AbrirHerrero (s -> c)  abrir el menú del herrero
-	  Herrero      (c -> s)  en el menú del herrero: "Mejorar", "Reparar" o "RepararHierro"
+	  Herrero      (c -> s)  en el menú del herrero: "Mejorar", "Reparar", "RepararHierro",
+	                         "Dinamita" o "DinamitaAzufre"
+	  Dinamita     (c -> s)  poner un cartucho encendido en ese punto
+	  Explosion    (s -> c)  explotó una dinamita: punto, para sacudir la cámara
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,6 +19,8 @@ local NAMES = {
 	"Golpe",
 	"AbrirHerrero",
 	"Herrero",
+	"Dinamita",
+	"Explosion",
 }
 
 local folder: Folder

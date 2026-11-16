@@ -18,6 +18,7 @@ local PicoService = require(script.Parent.PicoService)
 local Millonario = require(script.Parent.Millonario)
 local Casco = require(script.Parent.Casco)
 local Herrero = require(script.Parent.Herrero)
+local DinamitaService = require(script.Parent.DinamitaService)
 
 Players.RespawnTime = Config.TiempoReaparicion
 
@@ -25,10 +26,13 @@ local mapa = MapaBuilder.Build()
 Millonario.Build(mapa.mapa)
 Herrero.Build(mapa.mapa)
 PicoService.Init(mapa.minerales)
+DinamitaService.Init()
 
 local function onCharacter(player: Player, character: Model)
 	task.spawn(Casco.Poner, character)
+	-- En este orden, para que el pico quede en la ranura 1 y la dinamita en la 2.
 	task.defer(PicoService.Dar, player)
+	task.defer(DinamitaService.Sync, player)
 end
 
 local function onPlayerAdded(player: Player)
@@ -47,6 +51,7 @@ local function onPlayerAdded(player: Player)
 
 	PlayerData.Sync(player)
 	PicoService.Sync(player)
+	player:SetAttribute("Dinamita", PlayerData.Get(player).Dinamita)
 	Mochila.Crear(player)
 
 	player.CharacterAdded:Connect(function(character)

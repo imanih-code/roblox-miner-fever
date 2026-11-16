@@ -4,6 +4,7 @@
 	revisa distancia, cadencia, durabilidad y nivel del pico, y entonces:
 	  - roca: borra los vóxeles que el pico puede romper dentro de un radio
 	  - mineral: le quita un golpe; al llegar a 0 se suelta y va a la mochila
+	  - pedrusco (de una dinamita): le quita un golpe; con 0 golpes se rompe
 	Cada golpe que sirve gasta 1 de durabilidad; con 0 el pico ya no pica.
 ]]
 
@@ -160,6 +161,27 @@ local function dentroDeMina(p: Vector3): boolean
 		and p.Z < MINA_MAX.Z
 end
 
+PicoService.DentroDeMina = dentroDeMina
+
+-- Pedrusco suelto (de una dinamita): se rompe a golpes con cualquier pico.
+local function esPedrusco(pieza: BasePart): boolean
+	local carpeta = pieza.Parent
+	return pieza:GetAttribute("Pedrusco") == true
+		and carpeta ~= nil
+		and carpeta.Name == "Pedruscos"
+		and carpeta.Parent == workspace
+end
+
+local function golpearPedrusco(pieza: BasePart): boolean
+	local golpes = (pieza:GetAttribute("Golpes") or 1) - 1
+	if golpes > 0 then
+		pieza:SetAttribute("Golpes", golpes)
+	else
+		pieza:Destroy()
+	end
+	return true
+end
+
 local function picarRoca(player: Player, punto: Vector3, nivel: number): boolean
 	local r = Config.RadioPicado
 	local region = Region3.new(punto - Vector3.one * r, punto + Vector3.one * r):ExpandToGrid(4)
@@ -277,7 +299,14 @@ local function onPicar(player: Player, punto: any, pieza: any)
 
 	local ok = false
 	local color: Color3
-	if typeof(pieza) == "Instance" and pieza:IsA("BasePart") and pieza:IsDescendantOf(carpetaMinerales) then
+	if typeof(pieza) == "Instance" and pieza:IsA("BasePart") and esPedrusco(pieza) then
+		if (pieza.Position - head.Position).Magnitude > Config.Alcance + 4 then
+			return
+		end
+		color = pieza.Color
+		punto = pieza.Position
+		ok = golpearPedrusco(pieza)
+	elseif typeof(pieza) == "Instance" and pieza:IsA("BasePart") and pieza:IsDescendantOf(carpetaMinerales) then
 		if (pieza.Position - head.Position).Magnitude > Config.Alcance + 4 then
 			return
 		end

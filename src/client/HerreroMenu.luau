@@ -1,6 +1,7 @@
 --[[
-	Menú del herrero: muestra tu pico (velocidad y durabilidad) y tres botones:
-	mejorar al siguiente pico, reparar con dinero y reparar con hierro.
+	Menú del herrero: muestra tu pico (velocidad y durabilidad) y botones para
+	mejorar al siguiente pico, reparar con dinero, reparar con hierro y comprar
+	dinamita (con dinero, o más barata si das un azufre).
 	Se abre con Remotes.AbrirHerrero y se cierra con la X o al alejarte.
 	Todo se lee de los atributos del jugador; el servidor decide si se puede.
 ]]
@@ -121,6 +122,24 @@ local function refresh()
 		estado(botones.Mejorar, false, NARANJA, "Ya tienes el mejor pico")
 	end
 
+	local D = Config.Dinamita
+	local dinamita = num("Dinamita")
+	local lleno = dinamita >= D.Maximo
+	local rojo = Color3.fromRGB(190, 60, 50)
+	estado(
+		botones.Dinamita,
+		not lleno and dinero >= D.Precio,
+		rojo,
+		string.format("🧨 Dinamita · %s\n<font size=\"13\">tienes %d de %d</font>", Format.money(D.Precio), dinamita, D.Maximo)
+	)
+	local azufre = num("Mochila_Azufre")
+	estado(
+		botones.DinamitaAzufre,
+		not lleno and dinero >= D.PrecioConAzufre and azufre > 0,
+		rojo,
+		string.format("🧨 Con azufre · %s\n<font size=\"13\">+1 azufre (tienes %d)</font>", Format.money(D.PrecioConAzufre), azufre)
+	)
+
 	local falta = max - dur
 	if falta <= 0 then
 		estado(botones.Reparar, false, C.GOOD, "Tu pico está como nuevo")
@@ -233,6 +252,15 @@ local function build()
 	boton(panel, "Mejorar", 3)
 	boton(panel, "Reparar", 4)
 	boton(panel, "RepararHierro", 5)
+
+	-- Dinamita: con dinero o más barata con azufre, lado a lado.
+	local fila = Hud.frame(panel, { Size = UDim2.new(1, 0, 0, 54), BackgroundTransparency = 1, LayoutOrder = 6 })
+	local filaLayout = Instance.new("UIListLayout")
+	filaLayout.FillDirection = Enum.FillDirection.Horizontal
+	filaLayout.Padding = UDim.new(0, 10)
+	filaLayout.Parent = fila
+	boton(fila, "Dinamita", 1).Size = UDim2.new(0.5, -5, 1, 0)
+	boton(fila, "DinamitaAzufre", 2).Size = UDim2.new(0.5, -5, 1, 0)
 end
 
 function HerreroMenu.Abrir()

@@ -2,7 +2,7 @@
 	HUD de Fiebre Minera: dinero, mochila, pico y profundidad (arriba a la
 	izquierda) y avisos (toasts) arriba al centro.
 	El estado llega como atributos del jugador: Dinero, MochilaUsada,
-	MochilaMax, NombrePico, Durabilidad y DurabilidadMax (el pico).
+	MochilaMax, NombrePico, Durabilidad y DurabilidadMax (el pico) y Dinamita.
 ]]
 
 local Players = game:GetService("Players")
@@ -88,6 +88,8 @@ local mochilaLabel: TextLabel
 local mochilaStroke: UIStroke
 local picoLabel: TextLabel
 local picoStroke: UIStroke
+local dinamitaChip: Frame
+local dinamitaLabel: TextLabel
 local profundidadChip: Frame
 local profundidadLabel: TextLabel
 local toastHolder: Frame
@@ -120,6 +122,7 @@ local function build()
 	gui.Name = "Hud"
 	gui.ResetOnSpawn = false
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	gui.DisplayOrder = 10 -- los avisos se ven encima de los menús
 	gui.Parent = player:WaitForChild("PlayerGui")
 
 	local columna = frame(gui, {
@@ -158,7 +161,9 @@ local function build()
 	mochilaLabel, mochilaStroke = l1, s1
 	local _, l2, s2 = chip(columna, 3, Color3.fromRGB(230, 190, 140))
 	picoLabel, picoStroke = l2, s2
-	local f3, l3 = chip(columna, 4, INFO)
+	local f4, l4 = chip(columna, 4, Color3.fromRGB(255, 120, 100))
+	dinamitaChip, dinamitaLabel = f4, l4
+	local f3, l3 = chip(columna, 5, INFO)
 	profundidadChip, profundidadLabel = f3, l3
 
 	toastHolder = frame(gui, {
@@ -193,6 +198,9 @@ local function refresh()
 	picoLabel.Text = string.format("⛏ %s · %d/%d", player:GetAttribute("NombrePico") or "Sin pico", dur, durMax)
 	picoLabel.TextColor3 = if gastado then BAD else Color3.fromRGB(230, 190, 140)
 	picoStroke.Color = picoLabel.TextColor3
+	local dinamita = num("Dinamita")
+	dinamitaChip.Visible = dinamita > 0
+	dinamitaLabel.Text = string.format("🧨 Dinamita x%d", dinamita)
 end
 
 local function refreshProfundidad()

@@ -31,17 +31,23 @@ minerales, precios, pico, mochila, lámpara) están en
   - **Durabilidad:** cada golpe gasta 1. Con 0 el pico no pica hasta repararlo.
 - **El herrero** (a la izquierda de la boca de la mina, con su fragua): "Hablar con el
   herrero" abre su menú para **mejorar** el pico, **repararlo** con dinero (según lo gastado)
-  o **repararlo con hierro** de la mochila (cada hierro repara 35 %).
-- **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico con su durabilidad y
-  profundidad.
+  o **repararlo con hierro** de la mochila (cada hierro repara 35 %). También vende
+  **dinamita**: $40, o $15 si le das un azufre.
+- **Dinamita** (hasta 10): con la herramienta en la mano, clic para poner un cartucho donde
+  apuntas. La mecha dura 3 s y la explosión abre un hueco grande en cualquier roca de la mina
+  (menos la roca imposible), deja los minerales a la vista, empuja a los mineros cercanos sin
+  hacerles daño y suelta pedruscos que ruedan y pueden tapar túneles. Los pedruscos se rompen
+  con 2 golpes de pico y se limpian solos al minuto. Solo se usa dentro de la mina.
+- **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico con su durabilidad,
+  dinamita y profundidad.
 - **El millonario:** "Vender minerales" junto a su mostrador vende toda la mochila.
 - Los minerales Raros o mejores se anuncian a todo el servidor.
-- Se guardan el dinero y el pico (nivel y durabilidad). La mochila no: lo que no vendas se
-  pierde al salir.
+- Se guardan el dinero, el pico (nivel y durabilidad) y la dinamita. La mochila no: lo que
+  no vendas se pierde al salir.
 
-**Todavía no:** dinamita, carbón como combustible de la lámpara, minerales grandes en las
-manos, capas más hondas (Profundo, Magma, Núcleo), derrumbe que regenera la mina, tiendas y
-banca de pesas, sabotaje.
+**Todavía no:** carbón como combustible de la lámpara, minerales grandes en las manos, capas
+más hondas (Profundo, Magma, Núcleo), derrumbe que regenera la mina, tiendas y banca de
+pesas, sabotaje.
 
 ## Preparar el entorno
 
@@ -79,7 +85,9 @@ banca de pesas, sabotaje.
 
 Pruebas rápidas en Studio (barra de comandos con el juego corriendo):
 `workspace:SetAttribute("DarDinero", 500)` (servidor: dinero a todos),
-`workspace:SetAttribute("PonerDurabilidad", 3)` (servidor: durabilidad del pico de todos) y
+`workspace:SetAttribute("PonerDurabilidad", 3)` (servidor: durabilidad del pico de todos),
+`workspace:SetAttribute("PruebaDinamita", Vector3.new(x, y, z))` (cliente: pone la dinamita
+ahí, con la dinamita en la mano) y
 `workspace:SetAttribute("PruebaPicar", Vector3.new(x, y, z))` (cliente: pica hacia ese punto
 como si fuera un clic, con el pico en la mano).
 
@@ -103,7 +111,9 @@ src/
   server/   Main, PlayerData (guardado), MapaBuilder (cerros, valle, mina, entrada, cielo),
             Pueblo (casitas), Casco (casco con lámpara),
             Vetas (piezas de mineral), PicoService (pico, golpes y durabilidad), Mochila,
+            DinamitaService (dinamita, explosión y pedruscos),
             Npc (piezas para armar NPC), Millonario, Herrero (mejorar y reparar)
-  client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido), HerreroMenu,
+  client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido), DinamitaCliente,
+            HerreroMenu,
             Ambiente (nevada arriba, oscuridad bajo tierra)
 ```

@@ -5,6 +5,7 @@
 	  - Mejorar: paga el precio del siguiente pico (sale nuevo, con durabilidad llena)
 	  - Reparar: paga según lo gastado
 	  - Reparar con hierro: cada hierro de la mochila repara una parte del pico
+	  - Dinamita: la vende, y más barata si le das un azufre (pólvora)
 ]]
 
 local Players = game:GetService("Players")
@@ -17,6 +18,7 @@ local Format = require(Shared.Format)
 local PlayerData = require(script.Parent.PlayerData)
 local Mochila = require(script.Parent.Mochila)
 local PicoService = require(script.Parent.PicoService)
+local DinamitaService = require(script.Parent.DinamitaService)
 local Npc = require(script.Parent.Npc)
 
 local Herrero = {}
@@ -110,6 +112,12 @@ local ACCIONES = {
 	Mejorar = mejorar,
 	Reparar = reparar,
 	RepararHierro = repararConHierro,
+	Dinamita = function(player, data)
+		DinamitaService.Comprar(player, data, false)
+	end,
+	DinamitaAzufre = function(player, data)
+		DinamitaService.Comprar(player, data, true)
+	end,
 }
 
 local function onAccion(player: Player, accion: any)

@@ -217,6 +217,22 @@ Config.NivelesPico = { "madera", "piedra", "hierro", "oro", "diamante" }
 Config.Alcance = 12 -- studs desde la cabeza hasta donde pegas
 Config.RadioPicado = 4.6 -- radio de roca que borra cada golpe
 
+-- Dinamita ------------------------------------------------------------------------------
+-- Se compra con el herrero; abre un hueco grande en cualquier roca de la mina menos la
+-- roca imposible y suelta pedruscos que pueden tapar túneles.
+Config.Dinamita = {
+	Precio = 40,
+	PrecioConAzufre = 15, -- más 1 azufre de la mochila
+	Maximo = 10, -- cartuchos que puedes cargar
+	Alcance = 14, -- qué tan lejos la puedes poner
+	Mecha = 3, -- segundos hasta que explota
+	Radio = 9, -- radio del hueco
+	Pedruscos = 6, -- piedras sueltas que salen volando
+	GolpesPedrusco = 2, -- golpes de pico para romper un pedrusco
+	PedruscosDuran = 60, -- segundos hasta que se limpian solos
+	MaxPedruscos = 80, -- en todo el servidor; se borran los más viejos
+}
+
 -- Mochila -----------------------------------------------------------------------------
 Config.MochilaInicial = 12 -- minerales chicos que caben
 

@@ -214,8 +214,12 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
   | Diamante | 4.2 | 1500 | $700 |
 
   Reparar cobra según lo gastado. Cada hierro de la mochila repara el 35 % del pico.
-- **Aún no:** dinamita, minerales grandes, capas más hondas, derrumbe, tiendas, banca y
-  sabotaje.
+- **Dinamita:** $40, o $15 más 1 azufre; se cargan hasta 10 y se guardan. Mecha de 3 s,
+  hueco de radio 9 en cualquier roca de la mina (incluida la roca dura; nunca la roca
+  imposible). No mata: solo empuja. Suelta 6 pedruscos con física que se rompen con 2 golpes
+  de pico y se limpian solos al minuto (máximo 80 en el servidor). Solo se usa dentro de la
+  mina.
+- **Aún no:** minerales grandes, capas más hondas, derrumbe, tiendas, banca y sabotaje.
 
 ---
 

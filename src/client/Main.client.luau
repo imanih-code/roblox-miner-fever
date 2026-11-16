@@ -1,12 +1,14 @@
 --[[
-	Punto de entrada del cliente de Fiebre Minera.
-	Por ahora solo carga la configuración y avisa que arrancó; aquí se irán
-	iniciando el HUD, el picado, la lámpara y los menús.
+	Punto de entrada del cliente de Fiebre Minera: arranca el HUD, los golpes
+	del pico y la oscuridad de la mina.
 ]]
 
-local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
-local Config = require(Shared.Config)
+local Hud = require(script.Parent.Hud)
+local PicoCliente = require(script.Parent.PicoCliente)
+local Oscuridad = require(script.Parent.Oscuridad)
 
-local _ = Config -- se usará cuando haya HUD y herramientas
+Hud.Start()
+PicoCliente.Start()
+Oscuridad.Start()
 
 print("[Fiebre Minera] Cliente listo")

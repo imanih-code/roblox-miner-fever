@@ -184,7 +184,24 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
 
 ---
 
-## 11. Pendiente de decidir
+## 11. Primera versión jugable (decisiones tomadas)
+
+- **Mapa:** campamento de pasto (no se pica) sobre roca imposible. La mina es un bloque de
+  160 × 160 studs y unos 90 de hondo, enfrente del campamento; solo se entra por la boca,
+  que baja con una rampa a una galería de inicio.
+- **Capas hechas:** Superficie (piedra, carbón y cobre) y Cuevas (roca dura, que pide pico
+  de piedra; hierro, azufre y plata). Las de Profundo, Magma y Núcleo vienen después.
+- **Picado:** cada golpe borra la roca que tu pico puede romper en un radio de unos 4.6
+  studs; un golpe cada 0.5 s con el pico de madera. Las piezas de mineral piden 2 a 4 golpes.
+- **Mochila:** 12 minerales chicos; no se guarda al salir del juego.
+- **Precios iniciales:** carbón $4, cobre $10, azufre $14, hierro $18, plata $45.
+- **Lámpara:** por ahora siempre prendida; el carbón como combustible llega después.
+- **Aún no:** herrero, durabilidad, dinamita, minerales grandes, derrumbe, tiendas, banca y
+  sabotaje.
+
+---
+
+## 12. Pendiente de decidir
 
 - Nombre final del juego (repo: `roblox-miner-fever`).
 - Lista exacta de minerales, precios y rarezas.

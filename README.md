@@ -5,10 +5,31 @@ Abres camino con tu pico (o con dinamita), buscas minerales, los cargas hasta la
 se los vendes al millonario. Con el dinero mejoras tu pico, compras dinamita y mejoras tu
 banca de pesas en el campamento.
 
-El diseño completo está en [`DISENO.md`](DISENO.md). Los valores de balance irán en
+El diseño completo está en [`DISENO.md`](DISENO.md). Todos los valores de balance (capas,
+minerales, precios, pico, mochila, lámpara) están en
 [`src/shared/Config.luau`](src/shared/Config.luau).
 
-**Estado:** solo la base del proyecto (Rojo y scripts mínimos). La mina todavía no existe.
+## Qué hay jugable
+
+- **Campamento:** apareces mirando hacia la boca de la mina, con una fogata y el puesto del
+  millonario (traje, sombrero de copa, cadena de oro y dos guardaespaldas).
+- **La mina:** bloque de terreno excavable bajo el campamento. Bajas por una rampa con
+  faroles hasta una galería de inicio. Bajo tierra se apaga el cielo y solo alumbra tu
+  lámpara (y los faroles).
+  - **Superficie** (piedra, cualquier pico): carbón y cobre.
+  - **Cuevas** (roca dura, pide pico de piedra): hierro, azufre y plata.
+  - **Roca imposible** (basalto): manchas y bordes que ningún pico rompe.
+  - El pasto y la roca imposible encierran la mina: solo se entra por la boca.
+- **Pico de madera:** clic para picar donde apuntas (alcance 12 studs). Cada golpe borra un
+  poco de roca. Las piezas de mineral necesitan varios golpes y van a la mochila.
+- **Mochila:** 12 minerales. El HUD muestra dinero, mochila, pico y profundidad.
+- **El millonario:** "Vender minerales" junto a su mostrador vende toda la mochila.
+- Los minerales Raros o mejores se anuncian a todo el servidor.
+- El dinero se guarda con DataStore. La mochila no: lo que no vendas se pierde al salir.
+
+**Todavía no:** herrero (mejorar y reparar el pico), durabilidad del pico, dinamita, carbón
+como combustible de la lámpara, minerales grandes en las manos, derrumbe que regenera la
+mina, tiendas y banca de pesas, sabotaje.
 
 ## Preparar el entorno
 
@@ -37,7 +58,17 @@ El diseño completo está en [`DISENO.md`](DISENO.md). Los valores de balance ir
 2. En Roblox Studio abre un lugar nuevo (plantilla **Baseplate**).
 3. En la pestaña **Plugins → Rojo**, cambia el puerto a **34873** y pulsa **Connect**. El código se
    sincroniza solo mientras `rojo serve` siga abierto.
-4. Pulsa **Play**. En la salida debe aparecer `[Fiebre Minera] Servidor listo` y `[Fiebre Minera] Cliente listo`.
+4. **Una sola vez:** en el Explorer selecciona **Workspace → Terrain** y en sus propiedades
+   desmarca **Decoration** (el pasto alto tapa la vista). Los scripts no pueden cambiarlo, así
+   que se queda guardado en el lugar.
+5. Pulsa **Play**. En la salida debe aparecer `[Fiebre Minera] Mina lista con ... piezas de mineral`,
+   `Servidor listo` y `Cliente listo`. El mapa (terreno, mina y millonario) se construye al
+   arrancar el servidor; la Baseplate de la plantilla se quita sola.
+
+Pruebas rápidas en Studio (barra de comandos con el juego corriendo):
+`workspace:SetAttribute("DarDinero", 500)` (servidor: dinero a todos) y
+`workspace:SetAttribute("PruebaPicar", Vector3.new(x, y, z))` (cliente: pica hacia ese punto
+como si fuera un clic, con el pico en la mano).
 
 Para probar con varios jugadores: **Test → Clients and Servers** con 2 o más jugadores.
 
@@ -55,7 +86,9 @@ rojo build -o FiebreMinera.rbxlx
 
 ```
 src/
-  shared/   Config (balance; por ahora vacío)
-  server/   Main (punto de entrada del servidor)
-  client/   Main (punto de entrada del cliente)
+  shared/   Config (balance), Remotes, Format
+  server/   Main, PlayerData (guardado), MapaBuilder (terreno, mina, rampa, campamento),
+            Vetas (piezas de mineral), PicoService (pico y golpes), Mochila, Millonario
+  client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido),
+            Oscuridad (luz bajo tierra)
 ```

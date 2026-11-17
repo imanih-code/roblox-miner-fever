@@ -34,6 +34,9 @@ local function defaults()
 		NivelPico = 1,
 		DurabilidadPico = Config.Picos[1].Durabilidad,
 		Dinamita = 0,
+		Fuerza = 0, -- nivel
+		FuerzaXP = 0, -- experiencia hacia el siguiente nivel
+		NivelBanca = 1,
 		TotalGanado = 0,
 		UltimaVez = 0,
 	}
@@ -56,6 +59,9 @@ local function merge(saved: any)
 	end
 	data.DurabilidadPico = math.clamp(math.floor(data.DurabilidadPico), 0, max)
 	data.Dinamita = math.clamp(math.floor(data.Dinamita), 0, Config.Dinamita.Maximo)
+	data.Fuerza = math.clamp(math.floor(data.Fuerza), 0, Config.Fuerza.Maximo)
+	data.FuerzaXP = math.max(0, data.FuerzaXP)
+	data.NivelBanca = math.clamp(math.floor(data.NivelBanca), 1, #Config.Bancas)
 	return data
 end
 

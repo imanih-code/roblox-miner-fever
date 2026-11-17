@@ -32,7 +32,6 @@ local LUGARES = {
 	{ -50, -40 },
 	{ -36, -22 },
 	{ -56, -12 },
-	{ -38, 4 },
 	{ -62, 14 },
 	{ -72, -30 },
 	{ 46, -52 },
@@ -40,8 +39,6 @@ local LUGARES = {
 	{ 44, -22 },
 	{ 66, -8 },
 	{ 50, 22 },
-	{ -18, -70 },
-	{ 20, -66 },
 }
 
 local function parte(props: { [string]: any }, parent: Instance): Part

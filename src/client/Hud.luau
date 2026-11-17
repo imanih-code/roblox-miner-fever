@@ -2,7 +2,8 @@
 	HUD de Fiebre Minera: dinero, mochila, pico y profundidad (arriba a la
 	izquierda) y avisos (toasts) arriba al centro.
 	El estado llega como atributos del jugador: Dinero, MochilaUsada,
-	MochilaMax, NombrePico, Durabilidad y DurabilidadMax (el pico) y Dinamita.
+	MochilaMax, NombrePico, Durabilidad y DurabilidadMax (el pico), Dinamita,
+	Fuerza y TituloFuerza.
 ]]
 
 local Players = game:GetService("Players")
@@ -88,6 +89,7 @@ local mochilaLabel: TextLabel
 local mochilaStroke: UIStroke
 local picoLabel: TextLabel
 local picoStroke: UIStroke
+local fuerzaLabel: TextLabel
 local dinamitaChip: Frame
 local dinamitaLabel: TextLabel
 local profundidadChip: Frame
@@ -163,7 +165,9 @@ local function build()
 	picoLabel, picoStroke = l2, s2
 	local f4, l4 = chip(columna, 4, Color3.fromRGB(255, 120, 100))
 	dinamitaChip, dinamitaLabel = f4, l4
-	local f3, l3 = chip(columna, 5, INFO)
+	local _, l5 = chip(columna, 5, Color3.fromRGB(255, 170, 90))
+	fuerzaLabel = l5
+	local f3, l3 = chip(columna, 6, INFO)
 	profundidadChip, profundidadLabel = f3, l3
 
 	toastHolder = frame(gui, {
@@ -201,6 +205,7 @@ local function refresh()
 	local dinamita = num("Dinamita")
 	dinamitaChip.Visible = dinamita > 0
 	dinamitaLabel.Text = string.format("🧨 Dinamita x%d", dinamita)
+	fuerzaLabel.Text = string.format("💪 Fuerza %d · %s", num("Fuerza"), player:GetAttribute("TituloFuerza") or "Novato")
 end
 
 local function refreshProfundidad()

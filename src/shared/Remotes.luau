@@ -10,6 +10,11 @@
 	                         "Dinamita" o "DinamitaAzufre"
 	  Dinamita     (c -> s)  poner un cartucho encendido en ese punto
 	  Explosion    (s -> c)  explotó una dinamita: punto, para sacudir la cámara
+	  FuerzaEvento (s -> c)  en la banca: ("Bono" | "Cansancio", id, segundos para darle clic)
+	                         o ("Fin", id) para quitar el botón
+	  FuerzaClic   (c -> s)  le diste clic al botón de ese id
+	  Banca        (c -> s)  "Entrenar" (tocaste tu banca), "Levantarse" (saltaste mientras
+	                         entrenabas) o "Mejorar" (botón del panel)
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -24,6 +29,9 @@ local NAMES = {
 	"Herrero",
 	"Dinamita",
 	"Explosion",
+	"FuerzaEvento",
+	"FuerzaClic",
+	"Banca",
 }
 
 local folder: Folder

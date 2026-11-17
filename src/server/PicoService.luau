@@ -479,7 +479,9 @@ local function paso(dt: number)
 			soltarTrabajo(player)
 		else
 			local pico = picoDe(player)
-			o.progreso += pico.Poder * dt / pico.Cadencia / o.dureza
+			-- La Fuerza solo ayuda con los minerales, no con la roca.
+			local fuerza = if o.tipo == "mineral" then 1 + Config.Fuerza.BonoMineral * data.Fuerza else 1
+			o.progreso += pico.Poder * fuerza * dt / pico.Cadencia / o.dureza
 			o.ultimo = ahora
 			o.tocado = true
 			-- Un golpe cada Cadencia: gasta durabilidad y suenan las chispas.

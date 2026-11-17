@@ -233,7 +233,17 @@ la banca, Fuerza, y (opcional) una repisa en tu tienda con tus mejores minerales
   imposible). No mata: solo empuja. Suelta 8 pedruscos con física que se pican para quitarlos
   y se limpian solos al minuto (máximo 80 en el servidor). Solo se usa dentro de la
   mina.
-- **Aún no:** minerales grandes, capas más hondas, derrumbe, tiendas, banca y sabotaje.
+- **Campamento:** 14 tiendas de pared (lona, techo a dos aguas) en dos filas junto a la
+  aparición; cada jugador recibe una libre al entrar. Solo el dueño ve los avisos de su
+  banca.
+- **Fuerza:** se gana acostado en tu banca (salta para levantarte). Experiencia para subir
+  del nivel n: 20 × 1.12ⁿ; tope 50 (unas horas de entrenamiento). Bancas: tablas $0 (1/s),
+  metal $300 (2/s), cromada $1,500 (3.5/s), oro $5,000 (6/s). Bonus opcional cada 20–40 s
+  (+10 s de experiencia si le das en 4 s). Cansancio cada 2–4 min: 8 s para darle o te bajas.
+  Efecto: +3 % de velocidad al picar minerales por nivel (no la roca). Títulos: Novato (0),
+  Picador (10), Fortachón (20), Bestia (30), Titán (40); se anuncia al servidor al cambiar.
+- **Aún no:** minerales grandes (y cargar mejor con la Fuerza), capas más hondas, derrumbe y
+  sabotaje.
 
 ---
 

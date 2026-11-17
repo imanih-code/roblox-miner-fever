@@ -52,12 +52,23 @@ minerales, precios, pico, mochila, lámpara) están en
   dinamita y profundidad.
 - **El millonario:** "Vender minerales" junto a su mostrador vende toda la mochila.
 - Los minerales Raros o mejores se anuncian a todo el servidor.
-- Se guardan el dinero, el pico (nivel y durabilidad) y la dinamita. La mochila no: lo que
-  no vendas se pierde al salir.
+- **Tiendas y Fuerza:** cada jugador tiene una tienda de lona (dos filas junto a la
+  aparición, con su nombre encima) con su **banca de pesas**. "Entrenar" te acuesta en la
+  banca y la barra sube y baja; ganas Fuerza cada segundo (salta para levantarte).
+  - "Mejorar banca" (F) cambia la skin y da más Fuerza/s: tablas $0 (1/s), metal $300 (2/s),
+    cromada $1,500 (3.5/s), oro $5,000 (6/s).
+  - Mientras entrenas aparece cada tanto un botón **¡Bonus!** (opcional, +10 s de
+    experiencia) y cada 2 a 4 minutos uno de **¡Sigue entrenando!**: si no le das en 8 s, te
+    bajas de la banca (anti-AFK).
+  - La Fuerza (hasta 50) hace picar **minerales** un 3 % más rápido por nivel (no la roca).
+  - Título sobre la cabeza (Novato, Picador, Fortachón, Bestia, Titán) y tablero de los más
+    fuertes del servidor en el campamento.
+- Se guardan el dinero, el pico (nivel y durabilidad), la dinamita, la Fuerza y la banca. La
+  mochila no: lo que no vendas se pierde al salir.
 
-**Todavía no:** carbón como combustible de la lámpara, minerales grandes en las manos, capas
-más hondas (Profundo, Magma, Núcleo), derrumbe que regenera la mina, tiendas y banca de
-pesas, sabotaje.
+**Todavía no:** carbón como combustible de la lámpara, minerales grandes en las manos (y que
+la Fuerza ayude a cargarlos), capas más hondas (Profundo, Magma, Núcleo), derrumbe que
+regenera la mina, sabotaje.
 
 ## Preparar el entorno
 
@@ -97,7 +108,9 @@ Pruebas rápidas en Studio (barra de comandos con el juego corriendo):
 `workspace:SetAttribute("DarDinero", 500)` (servidor: dinero a todos),
 `workspace:SetAttribute("PonerDurabilidad", 3)` (servidor: durabilidad del pico de todos),
 `workspace:SetAttribute("PruebaDinamita", Vector3.new(x, y, z))` (cliente: pone la dinamita
-ahí, con la dinamita en la mano) y
+ahí, con la dinamita en la mano),
+`workspace:SetAttribute("DarFuerzaXP", 500)` (servidor: experiencia de Fuerza a todos),
+`workspace:SetAttribute("ForzarEventosBanca", true)` (servidor: bonus y cansancio ya) y
 `workspace:SetAttribute("PruebaPicar", Vector3.new(x, y, z))` (cliente: pica sin parar hacia
 ese punto, con el pico en la mano; `nil` para soltar).
 
@@ -123,8 +136,9 @@ src/
             Vetas (minerales ocultos hasta destaparlos), Pepitas (lo que sueltan),
             PicoService (pico, picado continuo y durabilidad), Mochila,
             DinamitaService (dinamita, explosión y pedruscos),
-            Npc (piezas para armar NPC), Millonario, Herrero (mejorar y reparar)
+            Npc (piezas para armar NPC), Millonario, Herrero (mejorar y reparar),
+            Campamento (tiendas y bancas), Fuerza (entrenar, títulos y tablero)
   client/   Main, Hud (estado y avisos), PicoCliente (clic, chispas y sonido), DinamitaCliente,
-            HerreroMenu,
+            HerreroMenu, FuerzaCliente (panel de entrenamiento y botones),
             Ambiente (nevada arriba)
 ```

@@ -281,4 +281,83 @@ Config.Lampara = {
 	Color = Color3.fromRGB(255, 226, 170),
 }
 
+-- Campamento: la banca de pesas de cada jugador, en arco mirando a la mina ------------
+-- Cada banca está en un círculo alrededor de la boca de la mina (Centro), en dos alas a
+-- los lados del camino de la aparición. Tu banca solo la ves tú; los demás la ven
+-- mientras entrenas en ella.
+Config.Campamento = {
+	Centro = Vector3.new(0, 0, 27), -- boca de la mina
+	Radio = 46,
+	Angulos = { 12, 20, 28, 36, 44, 52, 60, 68 }, -- grados desde el camino, en cada ala
+	Tablero = Vector3.new(-14, 0, -30), -- tablero de los más fuertes
+}
+
+-- Fuerza (banca de pesas) ---------------------------------------------------------------
+-- Se gana entrenando en tu banca. Solo ayuda con los minerales (no con la roca ni la
+-- velocidad al caminar), para que un jugador nuevo abra camino igual que uno viejo.
+Config.Fuerza = {
+	Maximo = 50,
+	-- Experiencia para subir del nivel n al n+1: XPBase × Crecimiento^n.
+	XPBase = 20,
+	Crecimiento = 1.12,
+	BonoMineral = 0.03, -- +3 % de velocidad al picar minerales por nivel
+	Titulos = {
+		{ Desde = 0, Nombre = "Novato" },
+		{ Desde = 10, Nombre = "Picador" },
+		{ Desde = 20, Nombre = "Fortachón" },
+		{ Desde = 30, Nombre = "Bestia" },
+		{ Desde = 40, Nombre = "Titán" },
+	},
+	-- Clic de bonus (opcional): aparece cada tanto y da varios segundos de entrenamiento.
+	Bono = { CadaMin = 20, CadaMax = 40, Dura = 4, Segundos = 10 },
+	-- Cansancio (anti-AFK): si no le das al botón a tiempo, te bajas de la banca.
+	Cansancio = { CadaMin = 120, CadaMax = 240, Plazo = 8 },
+}
+
+-- Bancas: mejorar solo cambia la skin y da más Fuerza por segundo.
+Config.Bancas = {
+	{
+		Nombre = "Banca de tablas",
+		PorSegundo = 1,
+		Precio = 0,
+		Asiento = Color3.fromRGB(122, 86, 54),
+		Marco = Color3.fromRGB(96, 68, 44),
+		MaterialMarco = Enum.Material.Wood,
+		Discos = Color3.fromRGB(118, 116, 112),
+		MaterialDiscos = Enum.Material.Slate,
+	},
+	{
+		Nombre = "Banca de metal",
+		PorSegundo = 2,
+		Precio = 300,
+		Asiento = Color3.fromRGB(140, 40, 36),
+		Marco = Color3.fromRGB(80, 82, 88),
+		MaterialMarco = Enum.Material.Metal,
+		Discos = Color3.fromRGB(30, 30, 32),
+		MaterialDiscos = Enum.Material.Metal,
+	},
+	{
+		Nombre = "Banca cromada",
+		PorSegundo = 3.5,
+		Precio = 1500,
+		Asiento = Color3.fromRGB(24, 24, 26),
+		Marco = Color3.fromRGB(210, 214, 222),
+		MaterialMarco = Enum.Material.Metal,
+		Discos = Color3.fromRGB(200, 204, 212),
+		MaterialDiscos = Enum.Material.Metal,
+		Reflejo = 0.35,
+	},
+	{
+		Nombre = "Banca de oro",
+		PorSegundo = 6,
+		Precio = 5000,
+		Asiento = Color3.fromRGB(70, 20, 40),
+		Marco = Color3.fromRGB(255, 196, 40),
+		MaterialMarco = Enum.Material.Metal,
+		Discos = Color3.fromRGB(255, 210, 70),
+		MaterialDiscos = Enum.Material.Metal,
+		Brillo = true,
+	},
+}
+
 return Config

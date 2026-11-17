@@ -1,6 +1,7 @@
 --[[
 	Punto de entrada del servidor de Fiebre Minera: construye el mapa y la mina,
-	pone al millonario y al herrero, arranca el pico y maneja entradas, salidas y
+	pone al millonario, al herrero y los lugares de las bancas, arranca el pico,
+	la dinamita y la Fuerza, y maneja entradas, salidas y
 	reapariciones de jugadores (a cada personaje le pone casco con lámpara y pico).
 ]]
 
@@ -20,18 +21,26 @@ local Casco = require(script.Parent.Casco)
 local Herrero = require(script.Parent.Herrero)
 local DinamitaService = require(script.Parent.DinamitaService)
 local Pepitas = require(script.Parent.Pepitas)
+local Campamento = require(script.Parent.Campamento)
+local Fuerza = require(script.Parent.Fuerza)
 
 Players.RespawnTime = Config.TiempoReaparicion
 
 local mapa = MapaBuilder.Build()
 Millonario.Build(mapa.mapa)
 Herrero.Build(mapa.mapa)
+Campamento.Build(mapa.mapa)
+Fuerza.Init(mapa.mapa)
 Pepitas.Init()
 PicoService.Init(mapa.minerales)
 DinamitaService.Init()
 
 local function onCharacter(player: Player, character: Model)
 	task.spawn(Casco.Poner, character)
+	task.spawn(function()
+		character:WaitForChild("Head", 10)
+		Fuerza.PonerTitulo(player)
+	end)
 	-- En este orden, para que el pico quede en la ranura 1 y la dinamita en la 2.
 	task.defer(PicoService.Dar, player)
 	task.defer(DinamitaService.Sync, player)
@@ -55,6 +64,8 @@ local function onPlayerAdded(player: Player)
 	PicoService.Sync(player)
 	player:SetAttribute("Dinamita", PlayerData.Get(player).Dinamita)
 	Mochila.Crear(player)
+	Campamento.Asignar(player)
+	Fuerza.Agregar(player)
 
 	player.CharacterAdded:Connect(function(character)
 		onCharacter(player, character)
